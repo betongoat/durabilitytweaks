@@ -75,14 +75,14 @@ zbroi netherytowej i diamentowej z suwakiem wytrzymałości oraz skala kolorów
 Języki: angielski, polski, niemiecki, hiszpański, francuski, portugalski (BR), rosyjski, ukraiński,
 czeski, włoski, turecki, holenderski, chiński, japoński, koreański.
 
+Ustawienia zapisują się w `config/durabilitytweaks.json`.
+
 ## Serwery
 
 Mod działa tylko po stronie klienta: nie wysyła żadnych pakietów i niczego nie rejestruje, więc serwer go
 nie widzi i nie musi go mieć. Dodatkowo mod blokuje znaną sztuczkę wykrywania modów przez tabliczki
 (serwer wpisuje klucz tłumaczenia moda na tabliczkę i patrzy, co klient odeśle) – dla serwera klient
 wygląda wtedy jak zwykły.
-
-Ustawienia zapisują się w `config/durabilitytweaks.json`.
 
 ## Jak to działa
 
