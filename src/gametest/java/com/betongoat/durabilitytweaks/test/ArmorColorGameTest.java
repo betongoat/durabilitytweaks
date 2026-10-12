@@ -27,10 +27,11 @@ public class ArmorColorGameTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
         context.runOnClient(client -> SelfCheck.run());
-        context.getInput().resizeWindow(1920, 1080);
 
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
             waitForWorld(context);
+            // Full HD only after the world loaded: software rendering on CI is too slow to load a world at 1080p
+            context.getInput().resizeWindow(1920, 1080);
             context.runOnClient(ArmorColorGameTest::hideHud);
 
             int y = context.computeOnClient(client -> (int) Math.floor(client.player.getY()));
