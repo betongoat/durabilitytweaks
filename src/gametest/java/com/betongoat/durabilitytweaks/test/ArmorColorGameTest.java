@@ -42,7 +42,7 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             command(world, "weather clear");
             command(world, "fill -7 " + (y - 1) + " -1 7 " + (y - 1) + " 9 minecraft:smooth_quartz");
             // Close enough that the row fills the picture
-            command(world, "tp @a 0.5 " + y + " 1.25 0 11");
+            command(world, "tp @a 0.5 " + y + " 0.7 0 10");
 
             // Netherite row, classic full colour and with numbers
             spawnRow(world, "netherite", NETHERITE_MAX, NETHERITE_ROW, y);
