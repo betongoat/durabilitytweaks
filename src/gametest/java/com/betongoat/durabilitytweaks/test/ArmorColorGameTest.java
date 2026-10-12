@@ -8,7 +8,6 @@ import com.betongoat.durabilitytweaks.gui.DurabilityConfigScreen;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -42,7 +41,8 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             command(world, "time set noon");
             command(world, "weather clear");
             command(world, "fill -7 " + (y - 1) + " -1 7 " + (y - 1) + " 9 minecraft:smooth_quartz");
-            command(world, "tp @a 0.5 " + y + " 0.5 0 9");
+            // Close enough that the row fills the picture
+            command(world, "tp @a 0.5 " + y + " 1.25 0 11");
 
             // Netherite row, classic full colour and with numbers
             spawnRow(world, "netherite", NETHERITE_MAX, NETHERITE_ROW, y);
@@ -58,15 +58,13 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             shoot(context, "gallery_4_diamond_outline", ColorStyle.OUTLINE, NumberMode.HELMET);
             shoot(context, "gallery_5_diamond_number_only", ColorStyle.NONE, NumberMode.HELMET_AND_CHESTPLATE);
 
-            // A player wearing worn netherite, every piece at a different durability
+            // Two players in worn armor, every piece at a different durability
             command(world, "kill @e[type=minecraft:armor_stand]");
-            command(world, "tp @a 0.5 " + y + " 3.5 0 0");
-            int[] mixed = {80, 45, 62, 12};
-            for (int slot = 0; slot < SLOTS.length; slot++) {
-                command(world, "item replace entity @a armor." + SLOTS[slot] + " with minecraft:netherite_" + PIECES[slot]
-                    + "[damage=" + damage(NETHERITE_MAX[slot], mixed[slot]) + "]");
-            }
-            context.runOnClient(client -> client.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            command(world, "tp @a 0.5 " + y + " 0.4 0 16");
+            spawnPerson(world, "left", 1.45, y, 172);
+            spawnPerson(world, "right", -0.45, y, 188);
+            equip(world, "@e[tag=left,limit=1]", "netherite", NETHERITE_MAX, new int[] {80, 45, 62, 12});
+            equip(world, "@e[tag=right,limit=1]", "diamond", DIAMOND_MAX, new int[] {35, 15, 55, 8});
             context.waitTicks(20);
             shoot(context, "gallery_6_player", ColorStyle.FULL, NumberMode.OFF);
             shoot(context, "gallery_7_player_numbers", ColorStyle.FULL, NumberMode.HELMET_AND_CHESTPLATE);
@@ -77,8 +75,6 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             context.waitTicks(10);
             context.takeScreenshot("gallery_8_settings");
             context.setScreen(() -> null);
-            context.runOnClient(client -> client.options.setCameraType(CameraType.FIRST_PERSON));
-
             DurabilityConfig.reset();
         }
     }
@@ -108,6 +104,23 @@ public class ArmorColorGameTest implements FabricClientGameTest {
 
     private static int damage(int maxDamage, int percentLeft) {
         return (int) Math.round(maxDamage * (100 - percentLeft) / 100.0);
+    }
+
+    /** A player look-alike: a mannequin (1.21.9+), an armor stand before that. */
+    private static void spawnPerson(TestSingleplayerContext world, String tag, double x, int y, float yaw) {
+        //? if >=1.21.9 {
+        String entity = "minecraft:mannequin";
+        //?} else {
+        /*String entity = "minecraft:armor_stand";
+        *///?}
+        command(world, "summon " + entity + " " + x + " " + y + " 3.0 {Rotation:[" + yaw + "f,0f],immovable:1b,hide_description:1b,NoGravity:1b,ShowArms:1b,Tags:[\"" + tag + "\"]}");
+    }
+
+    private static void equip(TestSingleplayerContext world, String target, String material, int[] maxDamage, int[] percents) {
+        for (int slot = 0; slot < SLOTS.length; slot++) {
+            command(world, "item replace entity " + target + " armor." + SLOTS[slot] + " with minecraft:" + material + "_" + PIECES[slot]
+                + "[damage=" + damage(maxDamage[slot], percents[slot]) + "]");
+        }
     }
 
     /** Eight armor stands facing the camera, from full to almost broken armor. */
