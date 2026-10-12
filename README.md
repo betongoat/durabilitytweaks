@@ -5,12 +5,24 @@ Pełna (nieuszkodzona) zbroja wygląda zupełnie zwyczajnie.
 
 Autor: **betongoat** · Licencja: MIT
 
+## Galeria
+
+Zrzuty ekranu z gry robione automatycznie przez CI (Minecraft 1.21.11, 1920×1080):
+
+| | |
+|---|---|
+| ![Pełny kolor](docs/gallery/gallery_1_netherite_full.png) | ![Liczby](docs/gallery/gallery_2_netherite_numbers.png) |
+| ![Diament](docs/gallery/gallery_3_diamond_full.png) | ![Obramówka](docs/gallery/gallery_4_diamond_outline.png) |
+| ![Sama liczba](docs/gallery/gallery_5_diamond_number_only.png) | ![Gracz](docs/gallery/gallery_6_player.png) |
+| ![Gracz z liczbami](docs/gallery/gallery_7_player_numbers.png) | ![Ustawienia](docs/gallery/gallery_8_settings.png) |
+
 ## Wersje
 
-Jeden kod źródłowy, osobny plik `.jar` dla każdej grupy wersji Minecrafta:
+**Jeden plik `durabilitytweaks-1.0.0.jar` działa na wszystkich wersjach 1.21 – 26.3.** W środku są wersje
+dla poszczególnych grup wydań Minecrafta, a Fabric Loader sam ładuje tę pasującą do gry:
 
-| Jar        | Minecraft            | Java |
-|------------|----------------------|------|
+| Wersja w środku | Minecraft       | Java |
+|-----------------|-----------------|------|
 | `+1.21.1`  | 1.21 – 1.21.1        | 21   |
 | `+1.21.3`  | 1.21.2 – 1.21.3      | 21   |
 | `+1.21.4`  | 1.21.4               | 21   |
@@ -50,17 +62,25 @@ od 10% kolor zmienia się co 5%.
 ## Ustawienia (GUI)
 
 Otwierane klawiszem **K** (do zmiany w Sterowaniu) albo przyciskiem w Mod Menu.
-Po lewej opcje, po prawej podgląd na żywo zbroi netherytowej i diamentowej z suwakiem wytrzymałości
-oraz skala kolorów (najedź na kolor, żeby zobaczyć zakres procentów).
+Domyślnie: pełne kolory, bez liczby. Po lewej opcje w trzech zakładkach, po prawej podgląd na żywo
+zbroi netherytowej i diamentowej z suwakiem wytrzymałości oraz skala kolorów
+(najedź na kolor, żeby zobaczyć zakres procentów).
 
-- **Styl** – *Pełny kolor* (cała zbroja, jak klasyczny dura pack), *Obramówka* (zbroja wygląda normalnie,
-  kolorowe są tylko krawędzie), *Bez koloru*.
-- **Kolory** – klasyczne, zielony → czerwony, dla daltonistów.
-- **Grubość obramówki** – cienka / gruba.
-- **Liczba** – wytrzymałość wypisana na hełmie albo na hełmie i napierśniku.
-- **Liczba pokazuje** – procenty albo punkty wytrzymałości.
-- **Liczba przy 100%** – czy pokazywać liczbę na nieuszkodzonej zbroi.
-- **Zbroje** – wszystkie albo tylko diament i netheryt.
+- **Wygląd** – styl do wyboru na obrazkach: *Pełny* (cała zbroja, jak klasyczny dura pack),
+  *Obramówka* (zbroja wygląda normalnie, kolorowe są tylko krawędzie), *Brak*;
+  kolory (klasyczne, zielony → czerwony, dla daltonistów); grubość obramówki.
+- **Liczba** – brak / na hełmie / na hełmie i napierśniku; procenty albo punkty; czy pokazywać przy 100%.
+- **Ogólne** – włącz/wyłącz, które zbroje (wszystkie albo diament i netheryt), reset.
+
+Języki: angielski, polski, niemiecki, hiszpański, francuski, portugalski (BR), rosyjski, ukraiński,
+czeski, włoski, turecki, holenderski, chiński, japoński, koreański.
+
+## Serwery
+
+Mod działa tylko po stronie klienta: nie wysyła żadnych pakietów i niczego nie rejestruje, więc serwer go
+nie widzi i nie musi go mieć. Dodatkowo mod blokuje znaną sztuczkę wykrywania modów przez tabliczki
+(serwer wpisuje klucz tłumaczenia moda na tabliczkę i patrzy, co klient odeśle) – dla serwera klient
+wygląda wtedy jak zwykły.
 
 Ustawienia zapisują się w `config/durabilitytweaks.json`.
 
@@ -76,8 +96,9 @@ a po przeładowaniu resource packów (F3+T) wszystko generuje się od nowa.
 Projekt używa [Stonecutter](https://stonecutter.kikugie.dev/) do budowania wielu wersji z jednego kodu.
 
 ```sh
-./gradlew buildAndCollect          # wszystkie wersje -> build/libs/<wersja moda>/
-./gradlew :1.21.11:buildAndCollect # jedna wersja
+./gradlew universalJar             # jeden jar na wszystkie wersje -> build/libs/durabilitytweaks-<wersja>.jar
+./gradlew buildAndCollect          # osobne jary -> build/libs/<wersja moda>/
+./gradlew :1.21.11:runClientGameTest # test w grze + zrzuty do galerii
 ```
 
 Potrzebne JDK 21 i JDK 25. GitHub Actions buduje każdą wersję i udostępnia gotowe jary jako artefakty.
