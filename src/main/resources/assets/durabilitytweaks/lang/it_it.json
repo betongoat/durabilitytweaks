@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Corazza",
   "durabilitytweaks.inspect.legs": "Gambali",
   "durabilitytweaks.inspect.feet": "Stivali",
-  "durabilitytweaks.inspect.all_full": "Tutto mostra 100%. Se questo giocatore ha sicuramente subito colpi, il server nasconde la durabilità delle armature altrui - nessuna mod o dura pack può mostrarla.",
+  "durabilitytweaks.inspect.all_full": "Tutta l'armatura mostra durabilità piena. Se questo giocatore ha sicuramente subito colpi, il server nasconde la durabilità delle armature altrui - nessuna mod o dura pack può mostrarla.",
   "key.durabilitytweaks.inspect": "Controlla l'armatura nel mirino"
 }

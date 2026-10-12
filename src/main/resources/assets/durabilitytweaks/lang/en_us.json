@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Chest",
   "durabilitytweaks.inspect.legs": "Legs",
   "durabilitytweaks.inspect.feet": "Boots",
-  "durabilitytweaks.inspect.all_full": "Everything shows 100%. If this player was surely hit, the server hides other players' armor durability - then no mod or dura pack can show it.",
+  "durabilitytweaks.inspect.all_full": "All armor shows full durability. If this player was surely hit, the server hides other players' armor durability - then no mod or dura pack can show it.",
   "key.durabilitytweaks.inspect": "Check armor under crosshair"
 }

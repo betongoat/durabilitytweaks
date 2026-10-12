@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Brust",
   "durabilitytweaks.inspect.legs": "Beine",
   "durabilitytweaks.inspect.feet": "Schuhe",
-  "durabilitytweaks.inspect.all_full": "Alles zeigt 100%. Wurde dieser Spieler sicher getroffen, versteckt der Server die Haltbarkeit fremder Rüstung - dann kann keine Mod und kein Dura-Pack sie anzeigen.",
+  "durabilitytweaks.inspect.all_full": "Die ganze Rüstung zeigt volle Haltbarkeit. Wurde dieser Spieler sicher getroffen, versteckt der Server die Haltbarkeit fremder Rüstung - dann kann keine Mod und kein Dura-Pack sie anzeigen.",
   "key.durabilitytweaks.inspect": "Rüstung im Fadenkreuz prüfen"
 }

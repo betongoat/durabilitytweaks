@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "胸甲",
   "durabilitytweaks.inspect.legs": "护腿",
   "durabilitytweaks.inspect.feet": "靴子",
-  "durabilitytweaks.inspect.all_full": "全部显示 100%。如果该玩家确实受过伤，说明服务器隐藏了其他玩家的盔甲耐久 - 任何模组或耐久材质包都无法显示。",
+  "durabilitytweaks.inspect.all_full": "所有盔甲都显示满耐久。如果该玩家确实受过伤，说明服务器隐藏了其他玩家的盔甲耐久 - 任何模组或耐久材质包都无法显示。",
   "key.durabilitytweaks.inspect": "查看准星处的盔甲"
 }

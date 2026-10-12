@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Plastron",
   "durabilitytweaks.inspect.legs": "Jambières",
   "durabilitytweaks.inspect.feet": "Bottes",
-  "durabilitytweaks.inspect.all_full": "Tout affiche 100 %. Si ce joueur a forcément pris des coups, le serveur cache la durabilité des armures des autres - aucun mod ni dura pack ne peut alors l'afficher.",
+  "durabilitytweaks.inspect.all_full": "Toute l'armure affiche une durabilité pleine. Si ce joueur a forcément pris des coups, le serveur cache la durabilité des armures des autres - aucun mod ni dura pack ne peut alors l'afficher.",
   "key.durabilitytweaks.inspect": "Vérifier l'armure visée"
 }

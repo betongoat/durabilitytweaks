@@ -2,6 +2,7 @@ package com.betongoat.durabilitytweaks.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.io.Reader;
@@ -21,11 +22,15 @@ public final class DurabilityConfig {
     public PaletteType palette = PaletteType.CLASSIC;
     public OutlineWidth outlineWidth = OutlineWidth.THIN;
     public NumberMode numberMode = NumberMode.OFF;
-    public NumberFormat numberFormat = NumberFormat.PERCENT;
+    public NumberFormat numberFormat = NumberFormat.POINTS;
     /** Paint the number even on undamaged armor (full armor otherwise looks vanilla). */
     public boolean showAtFull = false;
     public ArmorFilter armorFilter = ArmorFilter.ALL;
     public ArmorOwners owners = ArmorOwners.EVERYONE;
+    /** Settings file format; files without it come from 1.0.x. */
+    public int configVersion = CURRENT_VERSION;
+
+    private static final int CURRENT_VERSION = 2;
 
     private static DurabilityConfig instance = new DurabilityConfig();
     private static Path file;
@@ -38,8 +43,14 @@ public final class DurabilityConfig {
         file = configDir.resolve("durabilitytweaks.json");
         if (Files.exists(file)) {
             try (Reader reader = Files.newBufferedReader(file)) {
-                DurabilityConfig loaded = GSON.fromJson(reader, DurabilityConfig.class);
-                if (loaded != null) {
+                JsonObject json = GSON.fromJson(reader, JsonObject.class);
+                if (json != null) {
+                    DurabilityConfig loaded = GSON.fromJson(json, DurabilityConfig.class);
+                    if (!json.has("configVersion")) {
+                        // 1.0.x saved percent as the default; the number now shows durability points left
+                        loaded.numberFormat = NumberFormat.POINTS;
+                    }
+                    loaded.configVersion = CURRENT_VERSION;
                     instance = loaded.sanitized();
                 }
             } catch (IOException | JsonParseException e) {

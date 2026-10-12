@@ -18,7 +18,7 @@ Zrzuty ekranu z gry robione automatycznie przez CI (Minecraft 26.2, 1920×1080):
 
 ## Wersje
 
-**Jeden plik `durabilitytweaks-1.1.0.jar` działa na wszystkich wersjach 1.21 – 26.3**
+**Jeden plik `durabilitytweaks-1.1.1.jar` działa na wszystkich wersjach 1.21 – 26.3**
 ([pobierz z Releases](https://github.com/betongoat/durabilitytweaks/releases/latest)). W środku są wersje
 dla poszczególnych grup wydań Minecrafta, a Fabric Loader sam ładuje tę pasującą do gry:
 
@@ -70,12 +70,13 @@ zbroi netherytowej i diamentowej z suwakiem wytrzymałości oraz skala kolorów
 - **Wygląd** – styl do wyboru na obrazkach: *Pełny* (cała zbroja, jak klasyczny dura pack),
   *Obramówka* (zbroja wygląda normalnie, kolorowe są tylko krawędzie), *Brak*;
   kolory (klasyczne, zielony → czerwony, dla daltonistów); grubość obramówki.
-- **Liczba** – brak / na hełmie / na hełmie i napierśniku; procenty albo punkty; czy pokazywać przy 100%.
+- **Liczba** – brak / na hełmie / na hełmie i napierśniku; ile punktów wytrzymałości zostało (domyślnie)
+  albo procenty; czy pokazywać na pełnej zbroi.
 - **Ogólne** – włącz/wyłącz, które zbroje (wszystkie albo diament i netheryt), czyja zbroja
   (wszyscy / tylko moja / tylko inni), reset.
 
-Klawisz **J** wypisuje na twoim czacie (tylko u ciebie) wytrzymałość zbroi gracza lub moba pod celownikiem.
-Jeśli u innego gracza wszystko ma 100%, mimo że dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych
+Klawisz **J** wypisuje na twoim czacie (tylko u ciebie) pozostałą wytrzymałość zbroi gracza lub moba pod
+celownikiem, np. `400/592`. Jeśli u innego gracza cała zbroja jest pełna, mimo że dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych
 graczy i żaden mod ani dura pack jej nie pokaże.
 
 Języki: angielski, polski, niemiecki, hiszpański, francuski, portugalski (BR), rosyjski, ukraiński,

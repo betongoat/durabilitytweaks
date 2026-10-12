@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Hruď",
   "durabilitytweaks.inspect.legs": "Nohy",
   "durabilitytweaks.inspect.feet": "Boty",
-  "durabilitytweaks.inspect.all_full": "Vše ukazuje 100 %. Pokud hráč určitě dostal zásah, server skrývá odolnost cizího brnění - pak ji žádný mód ani dura pack neukáže.",
+  "durabilitytweaks.inspect.all_full": "Celé brnění ukazuje plnou odolnost. Pokud hráč určitě dostal zásah, server skrývá odolnost cizího brnění - pak ji žádný mód ani dura pack neukáže.",
   "key.durabilitytweaks.inspect": "Zkontrolovat brnění v zaměřovači"
 }

@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Нагрудник",
   "durabilitytweaks.inspect.legs": "Наголінники",
   "durabilitytweaks.inspect.feet": "Чоботи",
-  "durabilitytweaks.inspect.all_full": "Усюди 100%. Якщо гравець точно отримував шкоду, сервер приховує міцність чужого обладунку - тоді її не покаже жоден мод чи dura pack.",
+  "durabilitytweaks.inspect.all_full": "Увесь обладунок показує повну міцність. Якщо гравець точно отримував шкоду, сервер приховує міцність чужого обладунку - тоді її не покаже жоден мод чи dura pack.",
   "key.durabilitytweaks.inspect": "Перевірити обладунок у прицілі"
 }

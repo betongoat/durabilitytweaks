@@ -52,7 +52,8 @@ public final class ArmorInspector {
                     if (info.isFull()) {
                         full++;
                     }
-                    value = Component.literal(info.percentDisplay() + "%").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(rgb)));
+                    value = Component.literal(String.valueOf(info.remaining())).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(rgb)))
+                        .append(Component.literal("/" + info.max()).withStyle(ChatFormatting.DARK_GRAY));
                 }
             }
             message.append(Component.translatable("durabilitytweaks.inspect." + SLOT_KEYS[i]).withStyle(ChatFormatting.GRAY))

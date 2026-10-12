@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "胸",
   "durabilitytweaks.inspect.legs": "脚",
   "durabilitytweaks.inspect.feet": "足",
-  "durabilitytweaks.inspect.all_full": "すべて100%です。このプレイヤーが確実にダメージを受けているなら、サーバーが他人の防具の耐久値を隠しています。その場合はどのModや耐久値パックでも表示できません。",
+  "durabilitytweaks.inspect.all_full": "防具はすべて耐久値が満タンです。このプレイヤーが確実にダメージを受けているなら、サーバーが他人の防具の耐久値を隠しています。その場合はどのModや耐久値パックでも表示できません。",
   "key.durabilitytweaks.inspect": "照準先の防具を確認"
 }

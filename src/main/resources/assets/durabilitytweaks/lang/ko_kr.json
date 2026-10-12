@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "흉갑",
   "durabilitytweaks.inspect.legs": "레깅스",
   "durabilitytweaks.inspect.feet": "부츠",
-  "durabilitytweaks.inspect.all_full": "모두 100%입니다. 이 플레이어가 확실히 맞았다면 서버가 다른 플레이어의 갑옷 내구도를 숨기고 있습니다 - 어떤 모드나 내구도 팩도 표시할 수 없습니다.",
+  "durabilitytweaks.inspect.all_full": "모든 갑옷의 내구도가 가득 차 있습니다. 이 플레이어가 확실히 맞았다면 서버가 다른 플레이어의 갑옷 내구도를 숨기고 있습니다 - 어떤 모드나 내구도 팩도 표시할 수 없습니다.",
   "key.durabilitytweaks.inspect": "조준한 대상의 갑옷 확인"
 }

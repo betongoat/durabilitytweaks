@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Klata",
   "durabilitytweaks.inspect.legs": "Spodnie",
   "durabilitytweaks.inspect.feet": "Buty",
-  "durabilitytweaks.inspect.all_full": "Wszystko ma 100%. Jeśli ten gracz na pewno dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych graczy - wtedy żaden mod ani dura pack jej nie pokaże.",
+  "durabilitytweaks.inspect.all_full": "Cała zbroja ma pełną wytrzymałość. Jeśli ten gracz na pewno dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych graczy - wtedy żaden mod ani dura pack jej nie pokaże.",
   "key.durabilitytweaks.inspect": "Sprawdź zbroję pod celownikiem"
 }

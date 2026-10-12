@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Peitoral",
   "durabilitytweaks.inspect.legs": "Calças",
   "durabilitytweaks.inspect.feet": "Botas",
-  "durabilitytweaks.inspect.all_full": "Tudo mostra 100%. Se esse jogador com certeza levou dano, o servidor esconde a durabilidade da armadura dos outros - nenhum mod ou dura pack consegue mostrá-la.",
+  "durabilitytweaks.inspect.all_full": "Toda a armadura mostra durabilidade cheia. Se esse jogador com certeza levou dano, o servidor esconde a durabilidade da armadura dos outros - nenhum mod ou dura pack consegue mostrá-la.",
   "key.durabilitytweaks.inspect": "Ver a armadura na mira"
 }

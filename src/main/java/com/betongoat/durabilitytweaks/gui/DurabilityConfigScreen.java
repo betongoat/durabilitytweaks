@@ -421,7 +421,8 @@ public class DurabilityConfigScreen extends Screen {
             gfx.fill(centerX - 7 * scale, dollTop + dollHeight - 1, centerX + 7 * scale, dollTop + dollHeight + 1, 0x30000000);
             drawArmorSet(gfx, armor, info, centerX - 8 * scale, dollTop, scale);
 
-            Component name = Component.translatable("durabilitytweaks.material." + armor.name).append(" " + info.percentDisplay() + "%");
+            // Durability points left on the chestplate, like the number on the armor
+            Component name = Component.translatable("durabilitytweaks.material." + armor.name).append(" " + info.remaining() + "/" + info.max());
             int width = this.font.width(name) + 8;
             int labelY = dollTop + dollHeight + 4;
             gfx.fill(centerX - width / 2, labelY - 2, centerX + width / 2, labelY + 10, 0xA0101318);

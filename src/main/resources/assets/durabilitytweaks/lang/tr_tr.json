@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Göğüs",
   "durabilitytweaks.inspect.legs": "Bacak",
   "durabilitytweaks.inspect.feet": "Bot",
-  "durabilitytweaks.inspect.all_full": "Hepsi %100 gösteriyor. Bu oyuncu kesinlikle hasar aldıysa sunucu diğer oyuncuların zırh dayanıklılığını gizliyor - o zaman hiçbir mod veya dura pack gösteremez.",
+  "durabilitytweaks.inspect.all_full": "Tüm zırh tam dayanıklılık gösteriyor. Bu oyuncu kesinlikle hasar aldıysa sunucu diğer oyuncuların zırh dayanıklılığını gizliyor - o zaman hiçbir mod veya dura pack gösteremez.",
   "key.durabilitytweaks.inspect": "Nişangahtaki zırhı kontrol et"
 }

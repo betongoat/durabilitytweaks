@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Borst",
   "durabilitytweaks.inspect.legs": "Benen",
   "durabilitytweaks.inspect.feet": "Laarzen",
-  "durabilitytweaks.inspect.all_full": "Alles toont 100%. Is deze speler zeker geraakt, dan verbergt de server de duurzaamheid van andermans harnas - dan kan geen mod of dura pack die tonen.",
+  "durabilitytweaks.inspect.all_full": "Het hele harnas toont volle duurzaamheid. Is deze speler zeker geraakt, dan verbergt de server de duurzaamheid van andermans harnas - dan kan geen mod of dura pack die tonen.",
   "key.durabilitytweaks.inspect": "Harnas in het vizier bekijken"
 }

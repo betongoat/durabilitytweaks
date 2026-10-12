@@ -64,6 +64,6 @@
   "durabilitytweaks.inspect.chest": "Нагрудник",
   "durabilitytweaks.inspect.legs": "Поножи",
   "durabilitytweaks.inspect.feet": "Ботинки",
-  "durabilitytweaks.inspect.all_full": "Везде 100%. Если игрок точно получал урон, сервер скрывает прочность чужой брони - тогда её не покажет ни один мод или dura pack.",
+  "durabilitytweaks.inspect.all_full": "Вся броня показывает полную прочность. Если игрок точно получал урон, сервер скрывает прочность чужой брони - тогда её не покажет ни один мод или dura pack.",
   "key.durabilitytweaks.inspect": "Проверить броню в прицеле"
 }
