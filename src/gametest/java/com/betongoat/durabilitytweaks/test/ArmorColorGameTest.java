@@ -26,7 +26,11 @@ public class ArmorColorGameTest implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
-        context.runOnClient(client -> SelfCheck.run());
+        context.runOnClient(client -> {
+            SelfCheck.run();
+            // Software rendering on CI: an uncapped loading screen starves the integrated server
+            client.options.framerateLimit().set(30);
+        });
 
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
             waitForWorld(context);

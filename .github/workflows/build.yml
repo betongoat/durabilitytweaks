@@ -60,21 +60,21 @@ jobs:
           fi
 
       - name: Frame gallery images
-        if: matrix.version == '1.21.11'
+        if: matrix.version == '26.2'
         run: |
           pip install --quiet pillow
           python3 .github/scripts/gallery.py . gallery
           python3 .github/scripts/contact_sheet.py .
 
       - uses: actions/upload-artifact@v4
-        if: matrix.version == '1.21.11'
+        if: matrix.version == '26.2'
         with:
           name: gallery
           path: gallery/*.png
 
       # Keeps docs/gallery (used by the README and for Modrinth) in sync with the latest game screenshots
       - name: Publish gallery to the repository
-        if: matrix.version == '1.21.11' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: matrix.version == '26.2' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           mkdir -p docs/gallery
           cp gallery/*.png docs/gallery/

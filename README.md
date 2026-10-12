@@ -7,7 +7,7 @@ Autor: **betongoat** · Licencja: MIT
 
 ## Galeria
 
-Zrzuty ekranu z gry robione automatycznie przez CI (Minecraft 1.21.11, 1920×1080):
+Zrzuty ekranu z gry robione automatycznie przez CI (Minecraft 26.2, 1920×1080):
 
 | | |
 |---|---|
