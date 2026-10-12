@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: 耐久値 %s-%s%%",
   "key.durabilitytweaks.open_settings": "設定を開く",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "誰の防具",
+  "durabilitytweaks.option.owners.tooltip": "全員、自分だけ、または他のプレイヤーとモブの防具だけに色を付けます。",
+  "durabilitytweaks.option.owners.everyone": "全員",
+  "durabilitytweaks.option.owners.only_me": "自分だけ",
+  "durabilitytweaks.option.owners.only_others": "他人だけ",
+  "durabilitytweaks.inspect_hint": "照準先の防具を確認: %s",
+  "durabilitytweaks.inspect.nothing": "まずプレイヤーかモブを見てください。",
+  "durabilitytweaks.inspect.head": "頭",
+  "durabilitytweaks.inspect.chest": "胸",
+  "durabilitytweaks.inspect.legs": "脚",
+  "durabilitytweaks.inspect.feet": "足",
+  "durabilitytweaks.inspect.all_full": "すべて100%です。このプレイヤーが確実にダメージを受けているなら、サーバーが他人の防具の耐久値を隠しています。その場合はどのModや耐久値パックでも表示できません。",
+  "key.durabilitytweaks.inspect": "照準先の防具を確認"
 }

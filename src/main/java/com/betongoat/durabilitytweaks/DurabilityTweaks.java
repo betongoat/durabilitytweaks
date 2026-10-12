@@ -1,6 +1,7 @@
 package com.betongoat.durabilitytweaks;
 
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
+import com.betongoat.durabilitytweaks.gui.ArmorInspector;
 import com.betongoat.durabilitytweaks.gui.DurabilityConfigScreen;
 import com.betongoat.durabilitytweaks.gui.Screens;
 import com.betongoat.durabilitytweaks.render.ArmorTextureManager;
@@ -26,10 +27,23 @@ public final class DurabilityTweaks implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     private static KeyMapping openSettings;
+    private static KeyMapping inspectArmor;
     private static boolean smokeTestDone;
+
+    private static KeyMapping register(KeyMapping key) {
+        //? if >=26.1 {
+        return KeyMappingHelper.registerKeyMapping(key);
+        //?} else {
+        /*return KeyBindingHelper.registerKeyBinding(key);
+        *///?}
+    }
 
     public static KeyMapping openSettingsKey() {
         return openSettings;
+    }
+
+    public static KeyMapping inspectArmorKey() {
+        return inspectArmor;
     }
 
     @Override
@@ -41,12 +55,8 @@ public final class DurabilityTweaks implements ClientModInitializer {
         //?} else {
         /*String category = "key.categories.durabilitytweaks";
         *///?}
-        KeyMapping key = new KeyMapping("key.durabilitytweaks.open_settings", InputConstants.KEY_K, category);
-        //? if >=26.1 {
-        openSettings = KeyMappingHelper.registerKeyMapping(key);
-        //?} else {
-        /*openSettings = KeyBindingHelper.registerKeyBinding(key);
-        *///?}
+        openSettings = register(new KeyMapping("key.durabilitytweaks.open_settings", InputConstants.KEY_K, category));
+        inspectArmor = register(new KeyMapping("key.durabilitytweaks.inspect", InputConstants.KEY_J, category));
 
         boolean smokeTest = Boolean.getBoolean("durabilitytweaks.smokeTest");
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -58,6 +68,9 @@ public final class DurabilityTweaks implements ClientModInitializer {
                 client.stop();
             }
             ArmorTextureManager.tick();
+            while (inspectArmor.consumeClick()) {
+                ArmorInspector.inspect(client);
+            }
             while (openSettings.consumeClick()) {
                 if (Screens.current(client) == null) {
                     Screens.open(client, new DurabilityConfigScreen(null));

@@ -21,7 +21,12 @@ val clientMixins: List<String> = buildList {
     add("ClientPacketListenerMixin")
     add("TranslatableContentsMixin")
     add("KeyMappingMixin")
-    if (mc >= "1.21.2") add("EquipmentLayerRendererMixin") else add("HumanoidArmorLayerMixin")
+    if (mc >= "1.21.2") {
+        add("EquipmentLayerRendererMixin")
+        add("EntityRendererMixin")
+    } else {
+        add("HumanoidArmorLayerMixin")
+    }
 }
 
 val hasClientGameTests = mc >= "1.21.4"

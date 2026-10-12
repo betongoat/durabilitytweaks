@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% duurzaamheid",
   "key.durabilitytweaks.open_settings": "Instellingen openen",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Wiens harnas",
+  "durabilitytweaks.option.owners.tooltip": "Kleur het harnas van iedereen, alleen dat van jou of alleen dat van andere spelers en mobs.",
+  "durabilitytweaks.option.owners.everyone": "Iedereen",
+  "durabilitytweaks.option.owners.only_me": "Alleen mijn",
+  "durabilitytweaks.option.owners.only_others": "Alleen anderen",
+  "durabilitytweaks.inspect_hint": "Harnas in het vizier bekijken: %s",
+  "durabilitytweaks.inspect.nothing": "Kijk eerst naar een speler of mob.",
+  "durabilitytweaks.inspect.head": "Helm",
+  "durabilitytweaks.inspect.chest": "Borst",
+  "durabilitytweaks.inspect.legs": "Benen",
+  "durabilitytweaks.inspect.feet": "Laarzen",
+  "durabilitytweaks.inspect.all_full": "Alles toont 100%. Is deze speler zeker geraakt, dan verbergt de server de duurzaamheid van andermans harnas - dan kan geen mod of dura pack die tonen.",
+  "key.durabilitytweaks.inspect": "Harnas in het vizier bekijken"
 }

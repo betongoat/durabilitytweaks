@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %%%s-%s dayanıklılık",
   "key.durabilitytweaks.open_settings": "Ayarları aç",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Kimin zırhı",
+  "durabilitytweaks.option.owners.tooltip": "Herkesin zırhını, sadece seninkini ya da sadece diğer oyuncuların ve yaratıkların zırhını renklendir.",
+  "durabilitytweaks.option.owners.everyone": "Herkes",
+  "durabilitytweaks.option.owners.only_me": "Sadece benim",
+  "durabilitytweaks.option.owners.only_others": "Sadece diğerleri",
+  "durabilitytweaks.inspect_hint": "Nişangahtaki zırhı kontrol et: %s",
+  "durabilitytweaks.inspect.nothing": "Önce bir oyuncuya veya yaratığa bakın.",
+  "durabilitytweaks.inspect.head": "Kask",
+  "durabilitytweaks.inspect.chest": "Göğüs",
+  "durabilitytweaks.inspect.legs": "Bacak",
+  "durabilitytweaks.inspect.feet": "Bot",
+  "durabilitytweaks.inspect.all_full": "Hepsi %100 gösteriyor. Bu oyuncu kesinlikle hasar aldıysa sunucu diğer oyuncuların zırh dayanıklılığını gizliyor - o zaman hiçbir mod veya dura pack gösteremez.",
+  "key.durabilitytweaks.inspect": "Nişangahtaki zırhı kontrol et"
 }

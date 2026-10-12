@@ -2,6 +2,7 @@ package com.betongoat.durabilitytweaks.mixin;
 
 //? if >=1.21.2 {
 import com.betongoat.durabilitytweaks.render.ArmorTextureManager;
+import com.betongoat.durabilitytweaks.render.OwnArmor;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
@@ -28,7 +29,7 @@ public abstract class EquipmentLayerRendererMixin {
     private Object durabilitytweaks$swapArmorTexture(Object looked, @Local(argsOnly = true) ItemStack stack) {
         // The trim lookup goes through Function.apply too; it returns sprites, not texture ids
         if (looked instanceof Identifier texture) {
-            return ArmorTextureManager.remap(texture, stack);
+            return ArmorTextureManager.remap(texture, stack, OwnArmor.isOwn(stack));
         }
         return looked;
     }
@@ -43,7 +44,7 @@ public abstract class EquipmentLayerRendererMixin {
     )
     private int durabilitytweaks$dropDyeTint(int color, @Local(argsOnly = true) LayerType layerType, @Local(argsOnly = true) ItemStack stack) {
         // 0 means "skip this layer"; keep that, only replace real tints
-        if (color != 0 && isHumanoid(layerType) && ArmorTextureManager.replacesTint(stack)) {
+        if (color != 0 && isHumanoid(layerType) && ArmorTextureManager.replacesTint(stack, OwnArmor.isOwn(stack))) {
             return -1;
         }
         return color;

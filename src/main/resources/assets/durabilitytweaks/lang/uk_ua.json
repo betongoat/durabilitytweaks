@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% міцності",
   "key.durabilitytweaks.open_settings": "Відкрити налаштування",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Чий обладунок",
+  "durabilitytweaks.option.owners.tooltip": "Фарбувати обладунок усіх, лише свій або лише інших гравців і мобів.",
+  "durabilitytweaks.option.owners.everyone": "Усі",
+  "durabilitytweaks.option.owners.only_me": "Лише мій",
+  "durabilitytweaks.option.owners.only_others": "Лише чужі",
+  "durabilitytweaks.inspect_hint": "Перевірити обладунок у прицілі: %s",
+  "durabilitytweaks.inspect.nothing": "Спершу подивіться на гравця або моба.",
+  "durabilitytweaks.inspect.head": "Шолом",
+  "durabilitytweaks.inspect.chest": "Нагрудник",
+  "durabilitytweaks.inspect.legs": "Наголінники",
+  "durabilitytweaks.inspect.feet": "Чоботи",
+  "durabilitytweaks.inspect.all_full": "Усюди 100%. Якщо гравець точно отримував шкоду, сервер приховує міцність чужого обладунку - тоді її не покаже жоден мод чи dura pack.",
+  "key.durabilitytweaks.inspect": "Перевірити обладунок у прицілі"
 }

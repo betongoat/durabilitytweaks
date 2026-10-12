@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s : %s-%s %% de durabilité",
   "key.durabilitytweaks.open_settings": "Ouvrir les paramètres",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Armure de qui",
+  "durabilitytweaks.option.owners.tooltip": "Colorer l'armure de tout le monde, seulement la vôtre ou seulement celle des autres joueurs et mobs.",
+  "durabilitytweaks.option.owners.everyone": "Tout le monde",
+  "durabilitytweaks.option.owners.only_me": "Seulement la mienne",
+  "durabilitytweaks.option.owners.only_others": "Seulement les autres",
+  "durabilitytweaks.inspect_hint": "Vérifier l'armure visée : %s",
+  "durabilitytweaks.inspect.nothing": "Regardez d'abord un joueur ou un mob.",
+  "durabilitytweaks.inspect.head": "Casque",
+  "durabilitytweaks.inspect.chest": "Plastron",
+  "durabilitytweaks.inspect.legs": "Jambières",
+  "durabilitytweaks.inspect.feet": "Bottes",
+  "durabilitytweaks.inspect.all_full": "Tout affiche 100 %. Si ce joueur a forcément pris des coups, le serveur cache la durabilité des armures des autres - aucun mod ni dura pack ne peut alors l'afficher.",
+  "key.durabilitytweaks.inspect": "Vérifier l'armure visée"
 }

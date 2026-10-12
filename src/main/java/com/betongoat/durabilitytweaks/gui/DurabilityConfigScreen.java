@@ -157,14 +157,18 @@ public class DurabilityConfigScreen extends Screen {
         y += ROW;
         row(y, "filter", cycleButton(() -> config.armorFilter, v -> config.armorFilter = v, "filter"));
         y += ROW;
+        row(y, "owners", cycleButton(() -> config.owners, v -> config.owners = v, "owners"));
+        y += ROW;
         row(y, "reset", new ButtonSpec(Button.builder(Component.translatable("durabilitytweaks.reset"), b -> {
             DurabilityConfig.reset();
             this.rebuildWidgets();
         }), button -> { }));
-        y += ROW + 8;
+        y += ROW + 4;
         labels.add(new Label(Component.translatable("durabilitytweaks.keybind_hint",
             DurabilityTweaks.openSettingsKey().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.YELLOW)), leftX + 8, y));
-        labels.add(new Label(Component.translatable("durabilitytweaks.client_only"), leftX + 8, y + 12));
+        labels.add(new Label(Component.translatable("durabilitytweaks.inspect_hint",
+            DurabilityTweaks.inspectArmorKey().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.YELLOW)), leftX + 8, y + 11));
+        labels.add(new Label(Component.translatable("durabilitytweaks.client_only"), leftX + 8, y + 22));
     }
 
     /** A row of picture tiles for an option with few values; returns the y below it. */

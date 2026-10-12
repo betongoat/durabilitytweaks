@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s：%s-%s%% 耐久",
   "key.durabilitytweaks.open_settings": "打开设置",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "谁的盔甲",
+  "durabilitytweaks.option.owners.tooltip": "为所有人、仅自己或仅其他玩家和生物的盔甲着色。",
+  "durabilitytweaks.option.owners.everyone": "所有人",
+  "durabilitytweaks.option.owners.only_me": "仅自己",
+  "durabilitytweaks.option.owners.only_others": "仅他人",
+  "durabilitytweaks.inspect_hint": "查看准星处的盔甲：%s",
+  "durabilitytweaks.inspect.nothing": "请先看向一名玩家或生物。",
+  "durabilitytweaks.inspect.head": "头盔",
+  "durabilitytweaks.inspect.chest": "胸甲",
+  "durabilitytweaks.inspect.legs": "护腿",
+  "durabilitytweaks.inspect.feet": "靴子",
+  "durabilitytweaks.inspect.all_full": "全部显示 100%。如果该玩家确实受过伤，说明服务器隐藏了其他玩家的盔甲耐久 - 任何模组或耐久材质包都无法显示。",
+  "key.durabilitytweaks.inspect": "查看准星处的盔甲"
 }

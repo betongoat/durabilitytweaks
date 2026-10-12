@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% Haltbarkeit",
   "key.durabilitytweaks.open_settings": "Einstellungen öffnen",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Wessen Rüstung",
+  "durabilitytweaks.option.owners.tooltip": "Färbe die Rüstung von allen, nur deine oder nur die anderer Spieler und Mobs.",
+  "durabilitytweaks.option.owners.everyone": "Alle",
+  "durabilitytweaks.option.owners.only_me": "Nur meine",
+  "durabilitytweaks.option.owners.only_others": "Nur andere",
+  "durabilitytweaks.inspect_hint": "Rüstung im Fadenkreuz prüfen: %s",
+  "durabilitytweaks.inspect.nothing": "Schau zuerst einen Spieler oder Mob an.",
+  "durabilitytweaks.inspect.head": "Helm",
+  "durabilitytweaks.inspect.chest": "Brust",
+  "durabilitytweaks.inspect.legs": "Beine",
+  "durabilitytweaks.inspect.feet": "Schuhe",
+  "durabilitytweaks.inspect.all_full": "Alles zeigt 100%. Wurde dieser Spieler sicher getroffen, versteckt der Server die Haltbarkeit fremder Rüstung - dann kann keine Mod und kein Dura-Pack sie anzeigen.",
+  "key.durabilitytweaks.inspect": "Rüstung im Fadenkreuz prüfen"
 }

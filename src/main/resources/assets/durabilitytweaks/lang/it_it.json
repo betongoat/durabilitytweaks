@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% di durabilità",
   "key.durabilitytweaks.open_settings": "Apri impostazioni",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Armatura di chi",
+  "durabilitytweaks.option.owners.tooltip": "Colora l'armatura di tutti, solo la tua o solo quella di altri giocatori e mob.",
+  "durabilitytweaks.option.owners.everyone": "Tutti",
+  "durabilitytweaks.option.owners.only_me": "Solo la mia",
+  "durabilitytweaks.option.owners.only_others": "Solo gli altri",
+  "durabilitytweaks.inspect_hint": "Controlla l'armatura nel mirino: %s",
+  "durabilitytweaks.inspect.nothing": "Prima guarda un giocatore o un mob.",
+  "durabilitytweaks.inspect.head": "Elmo",
+  "durabilitytweaks.inspect.chest": "Corazza",
+  "durabilitytweaks.inspect.legs": "Gambali",
+  "durabilitytweaks.inspect.feet": "Stivali",
+  "durabilitytweaks.inspect.all_full": "Tutto mostra 100%. Se questo giocatore ha sicuramente subito colpi, il server nasconde la durabilità delle armature altrui - nessuna mod o dura pack può mostrarla.",
+  "key.durabilitytweaks.inspect": "Controlla l'armatura nel mirino"
 }

@@ -25,6 +25,7 @@ public final class DurabilityConfig {
     /** Paint the number even on undamaged armor (full armor otherwise looks vanilla). */
     public boolean showAtFull = false;
     public ArmorFilter armorFilter = ArmorFilter.ALL;
+    public ArmorOwners owners = ArmorOwners.EVERYONE;
 
     private static DurabilityConfig instance = new DurabilityConfig();
     private static Path file;
@@ -76,6 +77,7 @@ public final class DurabilityConfig {
         if (numberMode == null) numberMode = defaults.numberMode;
         if (numberFormat == null) numberFormat = defaults.numberFormat;
         if (armorFilter == null) armorFilter = defaults.armorFilter;
+        if (owners == null) owners = defaults.owners;
         return this;
     }
 }

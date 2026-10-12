@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% wytrzymałości",
   "key.durabilitytweaks.open_settings": "Otwórz ustawienia",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Czyja zbroja",
+  "durabilitytweaks.option.owners.tooltip": "Koloruj zbroję wszystkich, tylko swoją albo tylko innych graczy i mobów.",
+  "durabilitytweaks.option.owners.everyone": "Wszyscy",
+  "durabilitytweaks.option.owners.only_me": "Tylko moja",
+  "durabilitytweaks.option.owners.only_others": "Tylko inni",
+  "durabilitytweaks.inspect_hint": "Sprawdź zbroję pod celownikiem: %s",
+  "durabilitytweaks.inspect.nothing": "Najpierw spójrz na gracza albo moba.",
+  "durabilitytweaks.inspect.head": "Hełm",
+  "durabilitytweaks.inspect.chest": "Klata",
+  "durabilitytweaks.inspect.legs": "Spodnie",
+  "durabilitytweaks.inspect.feet": "Buty",
+  "durabilitytweaks.inspect.all_full": "Wszystko ma 100%. Jeśli ten gracz na pewno dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych graczy - wtedy żaden mod ani dura pack jej nie pokaże.",
+  "key.durabilitytweaks.inspect": "Sprawdź zbroję pod celownikiem"
 }

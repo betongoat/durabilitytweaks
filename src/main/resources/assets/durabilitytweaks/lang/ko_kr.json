@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: 내구도 %s-%s%%",
   "key.durabilitytweaks.open_settings": "설정 열기",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "누구의 갑옷",
+  "durabilitytweaks.option.owners.tooltip": "모두, 내 것만, 또는 다른 플레이어와 몹의 갑옷만 색칠합니다.",
+  "durabilitytweaks.option.owners.everyone": "모두",
+  "durabilitytweaks.option.owners.only_me": "내 것만",
+  "durabilitytweaks.option.owners.only_others": "다른 사람만",
+  "durabilitytweaks.inspect_hint": "조준한 대상의 갑옷 확인: %s",
+  "durabilitytweaks.inspect.nothing": "먼저 플레이어나 몹을 바라보세요.",
+  "durabilitytweaks.inspect.head": "투구",
+  "durabilitytweaks.inspect.chest": "흉갑",
+  "durabilitytweaks.inspect.legs": "레깅스",
+  "durabilitytweaks.inspect.feet": "부츠",
+  "durabilitytweaks.inspect.all_full": "모두 100%입니다. 이 플레이어가 확실히 맞았다면 서버가 다른 플레이어의 갑옷 내구도를 숨기고 있습니다 - 어떤 모드나 내구도 팩도 표시할 수 없습니다.",
+  "key.durabilitytweaks.inspect": "조준한 대상의 갑옷 확인"
 }

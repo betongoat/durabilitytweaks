@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
@@ -30,8 +31,9 @@ public abstract class HumanoidArmorLayerMixin {
         @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true) EquipmentSlot slot
     ) {
         ItemStack stack = entity.getItemBySlot(slot);
-        Identifier swapped = ArmorTextureManager.remap(texture, stack);
-        if (swapped != texture && ArmorTextureManager.replacesTint(stack)) {
+        boolean own = entity == Minecraft.getInstance().player;
+        Identifier swapped = ArmorTextureManager.remap(texture, stack, own);
+        if (swapped != texture && ArmorTextureManager.replacesTint(stack, own)) {
             color = -1;
         }
         original.call(layer, poseStack, buffers, light, model, color, swapped);

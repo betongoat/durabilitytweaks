@@ -62,28 +62,43 @@ public final class ArmorTextureManager {
         *///?}
     }
 
-    /** Durability of a worn armor piece, or null when this mod should leave the stack alone. */
-    public static DurabilityInfo infoFor(ItemStack stack) {
+    /**
+     * Durability of a worn armor piece, or null when this mod should leave the stack alone.
+     *
+     * @param own whether the local player wears it
+     */
+    public static DurabilityInfo infoFor(ItemStack stack, boolean own) {
         DurabilityConfig config = DurabilityConfig.get();
-        if (!config.enabled || stack.isEmpty() || !stack.isDamageableItem() || stack.getMaxDamage() <= 0) {
+        if (!config.enabled || !config.owners.includes(own)) {
             return null;
         }
-        String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
-        boolean netherite = path.contains("netherite");
-        if (config.armorFilter == ArmorFilter.DIAMOND_NETHERITE && !netherite && !path.contains("diamond")) {
+        DurabilityInfo info = durabilityOf(stack);
+        if (info != null && config.armorFilter == ArmorFilter.DIAMOND_NETHERITE) {
+            String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+            if (!path.contains("netherite") && !path.contains("diamond")) {
+                return null;
+            }
+        }
+        return info;
+    }
+
+    /** Durability of any damageable item, ignoring the settings; null when it has none. */
+    public static DurabilityInfo durabilityOf(ItemStack stack) {
+        if (stack.isEmpty() || !stack.isDamageableItem() || stack.getMaxDamage() <= 0) {
             return null;
         }
+        boolean netherite = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath().contains("netherite");
         DurabilityTier tier = netherite ? DurabilityTier.NETHERITE : DurabilityTier.DIAMOND;
         return DurabilityInfo.of(tier, stack.getDamageValue(), stack.getMaxDamage());
     }
 
     /** Texture to draw instead of {@code original} for this armor piece. */
-    public static Identifier remap(Identifier original, ItemStack stack) {
+    public static Identifier remap(Identifier original, ItemStack stack, boolean own) {
         ArmorLayout.Kind kind = ArmorLayout.classify(original.getPath());
         if (kind == null) {
             return original;
         }
-        DurabilityInfo info = infoFor(stack);
+        DurabilityInfo info = infoFor(stack, own);
         if (info == null) {
             return original;
         }
@@ -95,8 +110,8 @@ public final class ArmorTextureManager {
      * Whether the armor is fully recoloured, in which case the leather dye tint has to be
      * dropped or it would muddy the durability colour.
      */
-    public static boolean replacesTint(ItemStack stack) {
-        DurabilityInfo info = infoFor(stack);
+    public static boolean replacesTint(ItemStack stack, boolean own) {
+        DurabilityInfo info = infoFor(stack, own);
         return info != null && !info.isFull() && DurabilityConfig.get().style == ColorStyle.FULL;
     }
 

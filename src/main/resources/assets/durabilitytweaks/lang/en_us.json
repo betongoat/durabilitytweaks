@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% durability",
   "key.durabilitytweaks.open_settings": "Open settings",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Whose armor",
+  "durabilitytweaks.option.owners.tooltip": "Colour everyone's armor, only yours, or only other players' and mobs'.",
+  "durabilitytweaks.option.owners.everyone": "Everyone",
+  "durabilitytweaks.option.owners.only_me": "Only mine",
+  "durabilitytweaks.option.owners.only_others": "Only others",
+  "durabilitytweaks.inspect_hint": "Check armor under crosshair: %s",
+  "durabilitytweaks.inspect.nothing": "Look at a player or mob first.",
+  "durabilitytweaks.inspect.head": "Helmet",
+  "durabilitytweaks.inspect.chest": "Chest",
+  "durabilitytweaks.inspect.legs": "Legs",
+  "durabilitytweaks.inspect.feet": "Boots",
+  "durabilitytweaks.inspect.all_full": "Everything shows 100%. If this player was surely hit, the server hides other players' armor durability - then no mod or dura pack can show it.",
+  "key.durabilitytweaks.inspect": "Check armor under crosshair"
 }

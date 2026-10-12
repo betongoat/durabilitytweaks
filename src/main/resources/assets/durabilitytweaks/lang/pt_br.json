@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% de durabilidade",
   "key.durabilitytweaks.open_settings": "Abrir configurações",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Armadura de quem",
+  "durabilitytweaks.option.owners.tooltip": "Colorir a armadura de todos, só a sua ou só a de outros jogadores e mobs.",
+  "durabilitytweaks.option.owners.everyone": "Todos",
+  "durabilitytweaks.option.owners.only_me": "Só a minha",
+  "durabilitytweaks.option.owners.only_others": "Só os outros",
+  "durabilitytweaks.inspect_hint": "Ver a armadura na mira: %s",
+  "durabilitytweaks.inspect.nothing": "Olhe para um jogador ou mob primeiro.",
+  "durabilitytweaks.inspect.head": "Capacete",
+  "durabilitytweaks.inspect.chest": "Peitoral",
+  "durabilitytweaks.inspect.legs": "Calças",
+  "durabilitytweaks.inspect.feet": "Botas",
+  "durabilitytweaks.inspect.all_full": "Tudo mostra 100%. Se esse jogador com certeza levou dano, o servidor esconde a durabilidade da armadura dos outros - nenhum mod ou dura pack consegue mostrá-la.",
+  "key.durabilitytweaks.inspect": "Ver a armadura na mira"
 }

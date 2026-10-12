@@ -52,5 +52,18 @@
   "durabilitytweaks.legend.range": "%s: %s-%s%% прочности",
   "key.durabilitytweaks.open_settings": "Открыть настройки",
   "key.categories.durabilitytweaks": "Durability Tweaks",
-  "key.category.durabilitytweaks.main": "Durability Tweaks"
+  "key.category.durabilitytweaks.main": "Durability Tweaks",
+  "durabilitytweaks.option.owners": "Чья броня",
+  "durabilitytweaks.option.owners.tooltip": "Окрашивать броню всех, только свою или только других игроков и мобов.",
+  "durabilitytweaks.option.owners.everyone": "Все",
+  "durabilitytweaks.option.owners.only_me": "Только моя",
+  "durabilitytweaks.option.owners.only_others": "Только чужая",
+  "durabilitytweaks.inspect_hint": "Проверить броню в прицеле: %s",
+  "durabilitytweaks.inspect.nothing": "Сначала посмотрите на игрока или моба.",
+  "durabilitytweaks.inspect.head": "Шлем",
+  "durabilitytweaks.inspect.chest": "Нагрудник",
+  "durabilitytweaks.inspect.legs": "Поножи",
+  "durabilitytweaks.inspect.feet": "Ботинки",
+  "durabilitytweaks.inspect.all_full": "Везде 100%. Если игрок точно получал урон, сервер скрывает прочность чужой брони - тогда её не покажет ни один мод или dura pack.",
+  "key.durabilitytweaks.inspect": "Проверить броню в прицеле"
 }
