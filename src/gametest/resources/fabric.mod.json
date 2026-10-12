@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "durabilitytweaks-gametest",
+  "version": "1.0.0",
+  "name": "Durability Tweaks client game test",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": [
+      "com.betongoat.durabilitytweaks.test.ArmorColorGameTest"
+    ]
+  },
+  "depends": {
+    "durabilitytweaks": "*"
+  }
+}

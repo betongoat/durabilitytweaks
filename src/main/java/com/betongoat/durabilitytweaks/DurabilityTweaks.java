@@ -9,6 +9,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.TitleScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //? if >=26.1 {
@@ -43,7 +44,13 @@ public final class DurabilityTweaks implements ClientModInitializer {
         /*openSettings = KeyBindingHelper.registerKeyBinding(key);
         *///?}
 
+        boolean smokeTest = Boolean.getBoolean("durabilitytweaks.smokeTest");
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (smokeTest && Screens.current(client) instanceof TitleScreen) {
+                // CI check: the game started with all mixins applied
+                LOGGER.info("Smoke test passed: reached the title screen");
+                client.stop();
+            }
             ArmorTextureManager.tick();
             while (openSettings.consumeClick()) {
                 if (Screens.current(client) == null) {

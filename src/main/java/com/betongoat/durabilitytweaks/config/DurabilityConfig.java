@@ -28,15 +28,9 @@ public final class DurabilityConfig {
 
     private static DurabilityConfig instance = new DurabilityConfig();
     private static Path file;
-    /** Bumped on every change so cached textures know they are stale. */
-    private static int revision;
 
     public static DurabilityConfig get() {
         return instance;
-    }
-
-    public static int revision() {
-        return revision;
     }
 
     public static void load(Path configDir) {
@@ -55,7 +49,6 @@ public final class DurabilityConfig {
     }
 
     public static void save() {
-        revision++;
         if (file == null) {
             return;
         }

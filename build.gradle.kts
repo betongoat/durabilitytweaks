@@ -20,6 +20,8 @@ val clientMixins: List<String> = buildList {
     if (mc >= "1.21.2") add("EquipmentLayerRendererMixin") else add("HumanoidArmorLayerMixin")
 }
 
+val hasClientGameTests = mc >= "1.21.4"
+
 dependencies {
     fun fapi(vararg modules: String) {
         for (it in modules) modImplementation(fabricApi.module(it, sc.properties["deps.fabric_api"]))
@@ -30,12 +32,26 @@ dependencies {
     loomx.applyMojangMappings()
 
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+    // In-game tests with screenshots (Fabric's client game test API exists since 1.21.4)
+    if (hasClientGameTests) fapi("fabric-client-gametest-api-v1")
     fapi(
         "fabric-api-base",
         "fabric-lifecycle-events-v1",
         // Fabric API renamed the key binding module when it moved to Mojang names in 26.1
         if (mc >= "26.1") "fabric-key-mapping-api-v1" else "fabric-key-binding-api-v1",
     )
+}
+
+if (hasClientGameTests) {
+    fabricApi {
+        configureTests {
+            createSourceSet = true
+            modId = "durabilitytweaks-gametest"
+            enableGameTests = false
+            enableClientGameTests = true
+            eula = true
+        }
+    }
 }
 
 loom {
@@ -49,6 +65,13 @@ loom {
         preferGradleTask = true
         generateRunConfig = true
         runDirectory = rootProject.file("run")
+    }
+
+    // `-PsmokeTest`: runClient boots to the title screen and quits, used by CI on versions without client game tests
+    if (providers.gradleProperty("smokeTest").isPresent) {
+        runConfigs.named("client") {
+            vmArg("-Ddurabilitytweaks.smokeTest=true")
+        }
     }
 }
 
