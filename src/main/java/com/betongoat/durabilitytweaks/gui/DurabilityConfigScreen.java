@@ -59,7 +59,6 @@ public class DurabilityConfigScreen extends Screen {
     private static final int STAGE_BOTTOM = 0xFFD5E4F7;
 
     private static final String[] TABS = {"look", "number", "icons", "general"};
-    private static final int TOP = 32;
     private static final int TAB_HEIGHT = 18;
     private static final int ROW = 22;
     private static final int BUTTON_HEIGHT = 20;
@@ -83,6 +82,8 @@ public class DurabilityConfigScreen extends Screen {
     private final List<Row> rows = new ArrayList<>();
     private final ItemStack[] iconStacks = new ItemStack[NETHERITE_SET.length];
 
+    /** Top of the panels; the subtitle is left out on small screens to make room. */
+    private int top;
     private int panelWidth;
     private int leftX;
     private int rightX;
@@ -117,14 +118,16 @@ public class DurabilityConfigScreen extends Screen {
         iconPreviewTop = -1;
 
         int gap = 10;
+        top = this.height >= 300 ? 32 : 20;
         panelWidth = Math.min(230, (this.width - 3 * gap) / 2);
         leftX = this.width / 2 - gap / 2 - panelWidth;
         rightX = this.width / 2 + gap / 2;
         panelBottom = this.height - 32;
-        contentTop = TOP + TAB_HEIGHT + 6;
-        boolean roomForDescription = panelBottom - contentTop >= 200;
-        descriptionTop = roomForDescription ? panelBottom - 6 - DESCRIPTION_HEIGHT : -1;
-        contentBottom = roomForDescription ? descriptionTop - 6 : panelBottom - 6;
+        contentTop = top + TAB_HEIGHT + 6;
+        boolean roomForDescription = panelBottom - contentTop >= 180;
+        int descriptionHeight = panelBottom - contentTop >= 230 ? DESCRIPTION_HEIGHT : 36;
+        descriptionTop = roomForDescription ? panelBottom - 6 - descriptionHeight : -1;
+        contentBottom = roomForDescription ? descriptionTop - 4 : panelBottom - 6;
 
         switch (tab) {
             case 0 -> initLookTab();
@@ -386,8 +389,8 @@ public class DurabilityConfigScreen extends Screen {
 
     private void drawPanels(Gfx gfx, int mouseX, int mouseY) {
         // Settings panel with its tab strip
-        gfx.fill(leftX, TOP, leftX + panelWidth, panelBottom, PANEL);
-        gfx.outline(leftX - 1, TOP - 1, panelWidth + 2, panelBottom - TOP + 2, PANEL_BORDER);
+        gfx.fill(leftX, top, leftX + panelWidth, panelBottom, PANEL);
+        gfx.outline(leftX - 1, top - 1, panelWidth + 2, panelBottom - top + 2, PANEL_BORDER);
         for (int i = 0; i < TABS.length; i++) {
             int[] r = tabRect(i);
             boolean selected = tab == i;
@@ -397,21 +400,23 @@ public class DurabilityConfigScreen extends Screen {
                 gfx.fill(r[0], r[1], r[0] + r[2], r[1] + 2, ACCENT);
             }
         }
-        gfx.fill(leftX, TOP + TAB_HEIGHT, leftX + panelWidth, TOP + TAB_HEIGHT + 1, PANEL_BORDER);
+        gfx.fill(leftX, top + TAB_HEIGHT, leftX + panelWidth, top + TAB_HEIGHT + 1, PANEL_BORDER);
         if (descriptionTop >= 0) {
             gfx.fill(leftX + 6, descriptionTop, leftX + panelWidth - 6, panelBottom - 6, TILE);
             gfx.fill(leftX + 6, descriptionTop, leftX + 8, panelBottom - 6, ACCENT);
         }
 
         // Preview panel with a sky coloured stage for the armor
-        gfx.fill(rightX, TOP, rightX + panelWidth, panelBottom, PANEL);
-        gfx.outline(rightX - 1, TOP - 1, panelWidth + 2, panelBottom - TOP + 2, PANEL_BORDER);
-        gfx.gradient(rightX + 1, TOP + 1, rightX + panelWidth - 1, stageBottom, STAGE_TOP, STAGE_BOTTOM);
+        gfx.fill(rightX, top, rightX + panelWidth, panelBottom, PANEL);
+        gfx.outline(rightX - 1, top - 1, panelWidth + 2, panelBottom - top + 2, PANEL_BORDER);
+        gfx.gradient(rightX + 1, top + 1, rightX + panelWidth - 1, stageBottom, STAGE_TOP, STAGE_BOTTOM);
     }
 
     private void drawContent(Gfx gfx, int mouseX, int mouseY) {
         gfx.centeredText(this.font, this.title.copy().withStyle(ChatFormatting.BOLD), this.width / 2, 7, ACCENT);
-        gfx.centeredText(this.font, Component.translatable("durabilitytweaks.subtitle"), this.width / 2, 19, MUTED);
+        if (top > 20) {
+            gfx.centeredText(this.font, Component.translatable("durabilitytweaks.subtitle"), this.width / 2, 19, MUTED);
+        }
 
         for (int i = 0; i < TABS.length; i++) {
             int[] r = tabRect(i);
@@ -441,7 +446,11 @@ public class DurabilityConfigScreen extends Screen {
             drawIconPreview(gfx);
         }
         if (descriptionTop >= 0) {
-            drawDescription(gfx, description != null ? description : Component.translatable("durabilitytweaks.tab." + TABS[tab] + ".intro"));
+            Component text = description != null ? description : Component.translatable("durabilitytweaks.tab." + TABS[tab] + ".intro");
+            if (!drawDescription(gfx, text) && description != null) {
+                // Too long for the box: show all of it next to the mouse as well
+                tooltip = description;
+            }
         } else if (hoveredTile != null) {
             tooltip = hoveredTile.tooltip;
         }
@@ -449,7 +458,7 @@ public class DurabilityConfigScreen extends Screen {
         if (DurabilityConfig.get().enabled) {
             drawStage(gfx);
         } else {
-            gfx.centeredText(this.font, Component.translatable("durabilitytweaks.disabled"), rightX + panelWidth / 2, (TOP + stageBottom) / 2, 0xFF30343C);
+            gfx.centeredText(this.font, Component.translatable("durabilitytweaks.disabled"), rightX + panelWidth / 2, (top + stageBottom) / 2, 0xFF30343C);
         }
         Component legendTooltip = drawLegend(gfx, mouseX, mouseY);
         if (legendTooltip != null) {
@@ -460,16 +469,17 @@ public class DurabilityConfigScreen extends Screen {
         }
     }
 
-    /** Explanation of the hovered option (or of the whole tab), wrapped to the box. */
-    private void drawDescription(Gfx gfx, Component text) {
+    /** Explanation of the hovered option (or of the whole tab), wrapped to the box. Returns whether all of it fit. */
+    private boolean drawDescription(Gfx gfx, Component text) {
         int x = leftX + 14;
         int width = panelWidth - 26;
-        int y = descriptionTop + 5;
-        int maxLines = (panelBottom - 6 - y) / 10;
+        int y = descriptionTop + 4;
+        int maxLines = Math.max(1, (panelBottom - 6 - y) / 10);
         List<FormattedCharSequence> lines = this.font.split(text, width);
         for (int i = 0; i < Math.min(lines.size(), maxLines); i++) {
-            gfx.text(this.font, lines.get(i), x, y + i * 10, i == 0 && lines.size() == 1 ? TEXT : 0xFFD8DCE4, false);
+            gfx.text(this.font, lines.get(i), x, y + i * 10, 0xFFD8DCE4, false);
         }
+        return lines.size() <= maxLines;
     }
 
     /** Netherite icons at the preview durability, as the HUD and as an inventory would show them. */
@@ -537,7 +547,7 @@ public class DurabilityConfigScreen extends Screen {
 
     /** Netherite and diamond armor side by side at the slider's durability. */
     private void drawStage(Gfx gfx) {
-        int areaTop = TOP + 8;
+        int areaTop = top + 8;
         int labelHeight = 12;
         int areaHeight = stageBottom - areaTop - labelHeight - 4;
         int slotWidth = (panelWidth - 12) / PREVIEW_ARMOR.length;
@@ -629,7 +639,7 @@ public class DurabilityConfigScreen extends Screen {
         int width = panelWidth / TABS.length;
         int x = leftX + index * width;
         int last = TABS.length - 1;
-        return new int[] {x, TOP, index == last ? panelWidth - last * width : width, TAB_HEIGHT};
+        return new int[] {x, top, index == last ? panelWidth - last * width : width, TAB_HEIGHT};
     }
 
     private boolean tabHit(int index, double mouseX, double mouseY) {

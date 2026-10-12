@@ -39,7 +39,7 @@ public class ColorEditorScreen extends Screen {
     private static final int BUTTON_HEIGHT = 20;
     private static final int SWATCH_WIDTH = 90;
     private static final int RIGHT_WIDTH = 170;
-    private static final int TOP = 34;
+    private static final int TOP = 40;
     private static final int[] PRESETS = {
         0xFFFFFF, 0x1E1E1E, 0x2ECC40, 0x9BE15D, 0xFFE14D, 0xFF9F1A,
         0xFF4136, 0xF012BE, 0xB10DC9, 0x7FDBFF, 0x0074D9, 0x001F8F,
@@ -53,6 +53,7 @@ public class ColorEditorScreen extends Screen {
     private final int[] previousColors;
     private final List<Button> swatches = new ArrayList<>();
     private final List<Button> presets = new ArrayList<>();
+    private final List<Button> loadButtons = new ArrayList<>();
     private ChannelSlider[] sliders;
     private EditBox hex;
     private boolean syncing;
@@ -78,6 +79,7 @@ public class ColorEditorScreen extends Screen {
     protected void init() {
         swatches.clear();
         presets.clear();
+        loadButtons.clear();
         int total = 2 * SWATCH_WIDTH + 4 + 16 + RIGHT_WIDTH;
         leftX = (this.width - total) / 2;
         rightX = leftX + 2 * SWATCH_WIDTH + 4 + 16;
@@ -99,10 +101,12 @@ public class ColorEditorScreen extends Screen {
         int loadWidth = (2 * SWATCH_WIDTH + 4 - 8) / LOADABLE.length;
         for (int i = 0; i < LOADABLE.length; i++) {
             PaletteType type = LOADABLE[i];
-            this.addRenderableWidget(Button.builder(Component.translatable("durabilitytweaks.option." + type.key()), b -> load(type))
+            // The button shows the palette itself; its name is in the tooltip
+            loadButtons.add(this.addRenderableWidget(Button.builder(Component.empty(), b -> load(type))
                 .bounds(leftX + i * (loadWidth + 4), loadY, loadWidth, BUTTON_HEIGHT)
-                .tooltip(Tooltip.create(Component.translatable("durabilitytweaks.editor.load.tooltip")))
-                .build());
+                .tooltip(Tooltip.create(Component.translatable("durabilitytweaks.option." + type.key()).append(" - ")
+                    .append(Component.translatable("durabilitytweaks.editor.load.tooltip"))))
+                .build()));
         }
 
         int y = TOP + 76;
@@ -262,6 +266,17 @@ public class ColorEditorScreen extends Screen {
             }
         }
         gfx.text(this.font, Component.translatable("durabilitytweaks.editor.load"), leftX, TOP + 6 * 22 + 5, MUTED, false);
+        for (int i = 0; i < loadButtons.size(); i++) {
+            Button button = loadButtons.get(i);
+            int[] palette = LOADABLE[i].palette.colors();
+            int x0 = button.getX() + 5;
+            int width = button.getWidth() - 10;
+            int y0 = button.getY() + 6;
+            gfx.fill(x0 - 1, y0 - 1, x0 + width + 1, y0 + 9, 0xFF000000);
+            for (int c = 0; c < palette.length; c++) {
+                gfx.fill(x0 + width * c / palette.length, y0, x0 + width * (c + 1) / palette.length, y0 + 8, 0xFF000000 | palette[c]);
+            }
+        }
         for (int i = 0; i < presets.size(); i++) {
             Button button = presets.get(i);
             gfx.fill(button.getX() + 2, button.getY() + 2, button.getX() + button.getWidth() - 2, button.getY() + button.getHeight() - 2, 0xFF000000 | PRESETS[i]);

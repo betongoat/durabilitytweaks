@@ -42,6 +42,14 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             });
 
             int y = context.computeOnClient(client -> (int) Math.floor(client.player.getY()));
+            // The armor given later would pop up an advancement toast and chat message in the HUD shot
+            //? if >=1.21.11 {
+            command(world, "gamerule show_advancement_messages false");
+            //?} else {
+            /*command(world, "gamerule announceAdvancements false");
+            *///?}
+            command(world, "advancement grant @a only minecraft:nether/netherite_armor");
+            context.waitTicks(160);
             command(world, "time set noon");
             command(world, "weather clear");
             command(world, "fill -7 " + (y - 1) + " -1 7 " + (y - 1) + " 9 minecraft:smooth_quartz");
