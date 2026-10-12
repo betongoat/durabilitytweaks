@@ -18,7 +18,8 @@ Zrzuty ekranu z gry robione automatycznie przez CI (Minecraft 26.2, 1920×1080):
 
 ## Wersje
 
-**Jeden plik `durabilitytweaks-1.0.0.jar` działa na wszystkich wersjach 1.21 – 26.3.** W środku są wersje
+**Jeden plik `durabilitytweaks-1.0.0.jar` działa na wszystkich wersjach 1.21 – 26.3**
+([pobierz z Releases](https://github.com/betongoat/durabilitytweaks/releases/latest)). W środku są wersje
 dla poszczególnych grup wydań Minecrafta, a Fabric Loader sam ładuje tę pasującą do gry:
 
 | Wersja w środku | Minecraft       | Java |

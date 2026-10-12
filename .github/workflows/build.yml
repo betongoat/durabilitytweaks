@@ -147,6 +147,31 @@ jobs:
           path: build/libs/durabilitytweaks-*.jar
           if-no-files-found: error
 
+  # Every push to main refreshes the GitHub release of the current mod version with the tested universal jar
+  release:
+    name: GitHub release
+    needs: universal-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: durabilitytweaks-universal
+          path: universal
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(grep '^mod.version' stonecutter.properties.toml | cut -d '"' -f 2)
+          jar=$(ls universal/durabilitytweaks-*.jar)
+          notes="Durability Tweaks $version by betongoat - one jar for Minecraft 1.21 - 26.3 (Fabric). Needs Fabric API."
+          if gh release view "v$version" >/dev/null 2>&1; then
+            gh release upload "v$version" "$jar" --clobber
+          else
+            gh release create "v$version" "$jar" --title "Durability Tweaks $version" --notes "$notes" --target "$GITHUB_SHA"
+          fi
+
   # Starts a production-like client with only the universal jar on every version group
   universal-test:
     name: Universal jar on ${{ matrix.version }}
