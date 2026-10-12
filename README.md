@@ -71,7 +71,12 @@ zbroi netherytowej i diamentowej z suwakiem wytrzymałości oraz skala kolorów
   *Obramówka* (zbroja wygląda normalnie, kolorowe są tylko krawędzie), *Brak*;
   kolory (klasyczne, zielony → czerwony, dla daltonistów); grubość obramówki.
 - **Liczba** – brak / na hełmie / na hełmie i napierśniku; procenty albo punkty; czy pokazywać przy 100%.
-- **Ogólne** – włącz/wyłącz, które zbroje (wszystkie albo diament i netheryt), reset.
+- **Ogólne** – włącz/wyłącz, które zbroje (wszystkie albo diament i netheryt), czyja zbroja
+  (wszyscy / tylko moja / tylko inni), reset.
+
+Klawisz **J** wypisuje na twoim czacie (tylko u ciebie) wytrzymałość zbroi gracza lub moba pod celownikiem.
+Jeśli u innego gracza wszystko ma 100%, mimo że dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych
+graczy i żaden mod ani dura pack jej nie pokaże.
 
 Języki: angielski, polski, niemiecki, hiszpański, francuski, portugalski (BR), rosyjski, ukraiński,
 czeski, włoski, turecki, holenderski, chiński, japoński, koreański.
