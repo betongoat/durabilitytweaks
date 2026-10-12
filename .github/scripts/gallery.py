@@ -98,7 +98,8 @@ def frame(shot_path, out_path, index):
 def main():
     source, output = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
     output.mkdir(parents=True, exist_ok=True)
-    shots = sorted(source.rglob("*gallery_*.png"), key=gallery_name)
+    # Only raw game screenshots, never already framed images (e.g. docs/gallery)
+    shots = sorted((p for p in source.rglob("*gallery_*.png") if "screenshots" in p.parts), key=gallery_name)
     for index, shot in enumerate(shots):
         frame(shot, output / f"{gallery_name(shot)}.png", index)
         print(f"framed {shot.name}")
