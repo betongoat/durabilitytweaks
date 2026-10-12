@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin {
 
-    @Inject(method = "createRenderState", at = @At("RETURN"))
+    // The (entity, partialTick) overload; there is also an abstract no-argument one
+    @Inject(method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;", at = @At("RETURN"))
     private void durabilitytweaks$tagOwnArmor(CallbackInfoReturnable<EntityRenderState> cir, @Local(argsOnly = true) Entity entity) {
         if (entity != Minecraft.getInstance().player || !(cir.getReturnValue() instanceof HumanoidRenderState state)) {
             return;

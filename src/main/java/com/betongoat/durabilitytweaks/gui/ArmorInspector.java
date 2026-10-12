@@ -29,7 +29,7 @@ public final class ArmorInspector {
         }
         Entity target = minecraft.crosshairPickEntity;
         if (!(target instanceof LivingEntity living)) {
-            minecraft.player.sendSystemMessage(prefix().append(Component.translatable("durabilitytweaks.inspect.nothing")));
+            say(minecraft, prefix().append(Component.translatable("durabilitytweaks.inspect.nothing")));
             return;
         }
 
@@ -58,12 +58,21 @@ public final class ArmorInspector {
             message.append(Component.translatable("durabilitytweaks.inspect." + SLOT_KEYS[i]).withStyle(ChatFormatting.GRAY))
                 .append(" ").append(value).append(i < SLOTS.length - 1 ? "   " : "");
         }
-        minecraft.player.sendSystemMessage(message);
+        say(minecraft, message);
 
         if (living instanceof Player && living != minecraft.player && known > 0 && full == known) {
-            minecraft.player.sendSystemMessage(prefix().append(
+            say(minecraft, prefix().append(
                 Component.translatable("durabilitytweaks.inspect.all_full").withStyle(ChatFormatting.GRAY)));
         }
+    }
+
+    /** Shows a message in the local chat only; nothing is sent to the server. */
+    private static void say(Minecraft minecraft, Component message) {
+        //? if >=26.1 {
+        minecraft.player.sendSystemMessage(message);
+        //?} else {
+        /*minecraft.player.displayClientMessage(message, false);
+        *///?}
     }
 
     private static MutableComponent prefix() {
