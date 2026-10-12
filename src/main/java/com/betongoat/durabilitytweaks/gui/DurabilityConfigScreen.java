@@ -482,13 +482,14 @@ public class DurabilityConfigScreen extends Screen {
         int bottom = panelBottom - 6;
         List<FormattedCharSequence> lines = this.font.split(text, width);
         // The box grows upwards into free space for long texts, but never over the settings
-        int boxTop = Math.max(Math.min(descriptionTop, bottom - lines.size() * 10 - 6), Math.min(descriptionTop, contentEnd + 6));
+        int lineHeight = 9;
+        int boxTop = Math.max(Math.min(descriptionTop, bottom - lines.size() * lineHeight - 5), Math.min(descriptionTop, contentEnd + 4));
         gfx.fill(leftX + 6, boxTop, leftX + panelWidth - 6, bottom, TILE);
         gfx.fill(leftX + 6, boxTop, leftX + 8, bottom, ACCENT);
-        int y = boxTop + 4;
-        int maxLines = Math.max(1, (bottom - y) / 10);
+        int y = boxTop + 3;
+        int maxLines = Math.max(1, (bottom - y + 1) / lineHeight);
         for (int i = 0; i < Math.min(lines.size(), maxLines); i++) {
-            gfx.text(this.font, lines.get(i), x, y + i * 10, 0xFFD8DCE4, false);
+            gfx.text(this.font, lines.get(i), x, y + i * lineHeight, 0xFFD8DCE4, false);
         }
         return lines.size() <= maxLines;
     }
