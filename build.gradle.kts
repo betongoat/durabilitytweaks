@@ -23,23 +23,13 @@ val clientMixins: List<String> = buildList {
 val hasClientGameTests = mc >= "1.21.4"
 
 dependencies {
-    fun fapi(vararg modules: String) {
-        for (it in modules) modImplementation(fabricApi.module(it, sc.properties["deps.fabric_api"]))
-    }
-
     minecraft("com.mojang:minecraft:${sc.current.version}")
     // Applies Mojang Mappings on obfuscated versions
     loomx.applyMojangMappings()
 
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    // In-game tests with screenshots (Fabric's client game test API exists since 1.21.4)
-    if (hasClientGameTests) fapi("fabric-client-gametest-api-v1")
-    fapi(
-        "fabric-api-base",
-        "fabric-lifecycle-events-v1",
-        // Fabric API renamed the key binding module when it moved to Mojang names in 26.1
-        if (mc >= "26.1") "fabric-key-mapping-api-v1" else "fabric-key-binding-api-v1",
-    )
+    // The whole Fabric API: the mod depends on "fabric-api", and the client game tests need several of its modules
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${sc.properties.get<String>("deps.fabric_api")}")
 }
 
 if (hasClientGameTests) {
