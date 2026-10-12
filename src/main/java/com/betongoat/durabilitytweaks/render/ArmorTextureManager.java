@@ -5,6 +5,7 @@ import com.betongoat.durabilitytweaks.config.ArmorFilter;
 import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.NumberFormat;
+import com.betongoat.durabilitytweaks.config.NumberMode;
 import com.betongoat.durabilitytweaks.core.ArmorLayout;
 import com.betongoat.durabilitytweaks.core.DurabilityInfo;
 import com.betongoat.durabilitytweaks.core.DurabilityTier;
@@ -51,6 +52,16 @@ public final class ArmorTextureManager {
         }
     }
 
+    /** Location of a vanilla armor texture, e.g. ("diamond", OUTER). */
+    public static Identifier vanillaTexture(String material, ArmorLayout.Kind kind) {
+        boolean leggings = kind == ArmorLayout.Kind.LEGGINGS;
+        //? if >=1.21.2 {
+        return Identifier.withDefaultNamespace("textures/entity/equipment/" + (leggings ? "humanoid_leggings/" : "humanoid/") + material + ".png");
+        //?} else {
+        /*return Identifier.withDefaultNamespace("textures/models/armor/" + material + (leggings ? "_layer_2.png" : "_layer_1.png"));
+        *///?}
+    }
+
     /** Durability of a worn armor piece, or null when this mod should leave the stack alone. */
     public static DurabilityInfo infoFor(ItemStack stack) {
         DurabilityConfig config = DurabilityConfig.get();
@@ -94,7 +105,13 @@ public final class ArmorTextureManager {
      * nothing changes. Returns null if the original texture cannot be loaded.
      */
     public static Resolved resolve(Identifier original, ArmorLayout.Kind kind, DurabilityInfo info) {
-        TextureProcessor.Request request = request(info, kind);
+        DurabilityConfig config = DurabilityConfig.get();
+        return resolve(original, kind, info, config.style, config.numberMode);
+    }
+
+    /** Like {@link #resolve(Identifier, ArmorLayout.Kind, DurabilityInfo)} with the style and number placement overridden (settings screen previews). */
+    public static Resolved resolve(Identifier original, ArmorLayout.Kind kind, DurabilityInfo info, ColorStyle style, NumberMode numberMode) {
+        TextureProcessor.Request request = request(info, kind, style, numberMode);
         if (request == null) {
             Source source = source(original);
             return source == null ? null : new Resolved(original, source.width(), source.height());
@@ -113,23 +130,23 @@ public final class ArmorTextureManager {
         return generated.texture;
     }
 
-    private static TextureProcessor.Request request(DurabilityInfo info, ArmorLayout.Kind kind) {
+    private static TextureProcessor.Request request(DurabilityInfo info, ArmorLayout.Kind kind, ColorStyle colorStyle, NumberMode numberMode) {
         DurabilityConfig config = DurabilityConfig.get();
         boolean full = info.isFull();
         // Undamaged armor looks vanilla, unless the player wants to see "100" on it
-        if (full && !(config.showAtFull && config.numberMode.onHelmet())) {
+        if (full && !(config.showAtFull && numberMode.onHelmet())) {
             return null;
         }
-        ColorStyle style = full ? ColorStyle.NONE : config.style;
+        ColorStyle style = full ? ColorStyle.NONE : colorStyle;
         int color = full ? 0xFFFFFFFF : config.palette.palette.color(info.tier().paletteSlot(info.band()));
 
         String text = null;
         boolean head = false;
         boolean chest = false;
-        if (kind == ArmorLayout.Kind.OUTER && config.numberMode.onHelmet()) {
+        if (kind == ArmorLayout.Kind.OUTER && numberMode.onHelmet()) {
             text = String.valueOf(config.numberFormat == NumberFormat.POINTS ? info.remaining() : info.percentDisplay());
             head = true;
-            chest = config.numberMode.onChestplate();
+            chest = numberMode.onChestplate();
         }
         TextureProcessor.Request request = new TextureProcessor.Request(style, color, config.outlineWidth.texels, text, head, chest);
         return request.isNoop() ? null : request;

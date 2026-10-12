@@ -1,5 +1,6 @@
 package com.betongoat.durabilitytweaks.gui;
 
+import com.betongoat.durabilitytweaks.DurabilityTweaks;
 import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.NumberMode;
@@ -18,151 +19,214 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 //? if >=26.1 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 //?} else {
 /*import net.minecraft.client.gui.GuiGraphics;
 *///?}
+//? if >=1.21.9 {
+import net.minecraft.client.input.MouseButtonEvent;
+//?}
 
 /**
- * Settings screen: options on the left, a live preview of netherite and diamond armor on the right,
- * and the colour scale of both armor tiers underneath the preview.
+ * Settings screen. Left: settings split into three tabs, the two most important choices (style and
+ * number placement) as picture tiles. Right: live preview of netherite and diamond armor with a
+ * durability slider, and the colour scale of both armor tiers.
  */
 public class DurabilityConfigScreen extends Screen {
-    private static final int CARD_BG = 0xC80E1016;
-    private static final int CARD_BORDER = 0xFF3A4150;
-    private static final int CARD_HEADER = 0xF01C2029;
+    private static final int PANEL = 0xD20E1117;
+    private static final int PANEL_BORDER = 0xFF343B48;
+    private static final int TAB_IDLE = 0xFF171B22;
+    private static final int TAB_HOVER = 0xFF222834;
+    private static final int TILE = 0xFF1A1F28;
+    private static final int TILE_HOVER = 0xFF242B37;
+    private static final int TILE_SELECTED = 0xFF2C2A1E;
     private static final int ACCENT = 0xFFF2C14E;
     private static final int TEXT = 0xFFFFFFFF;
-    private static final int MUTED = 0xFFA7B0C0;
-    private static final int HEADER_HEIGHT = 14;
-    private static final int BUTTON_HEIGHT = 20;
-    private static final int TOP = 34;
-    private static final int BOTTOM_BAR = 30;
+    private static final int MUTED = 0xFF9AA3B2;
+    private static final int DIM = 0xFF5D6575;
+    private static final int STAGE_TOP = 0xFF8DB4EA;
+    private static final int STAGE_BOTTOM = 0xFFD5E4F7;
 
-    private static final PreviewArmor[] PREVIEW_ARMOR = {
-        new PreviewArmor("netherite", DurabilityTier.NETHERITE, 592),
-        new PreviewArmor("diamond", DurabilityTier.DIAMOND, 528),
-    };
+    private static final int TOP = 32;
+    private static final int TAB_HEIGHT = 18;
+    private static final int ROW = 22;
+    private static final int BUTTON_HEIGHT = 20;
+    /** Durability shown on the style and number tiles, so they always show colour. */
+    private static final int TILE_PERCENT = 45;
+
+    private static final PreviewArmor NETHERITE = new PreviewArmor("netherite", DurabilityTier.NETHERITE, 592);
+    private static final PreviewArmor DIAMOND = new PreviewArmor("diamond", DurabilityTier.DIAMOND, 528);
+    private static final PreviewArmor[] PREVIEW_ARMOR = {NETHERITE, DIAMOND};
+
+    private static int tab;
+    private static int previewPercent = 45;
 
     private final Screen parent;
     private final List<Runnable> refreshers = new ArrayList<>();
-    private int previewPercent = 45;
+    private final List<Tile> tiles = new ArrayList<>();
+    private final List<Label> labels = new ArrayList<>();
 
+    private int panelWidth;
     private int leftX;
     private int rightX;
-    private int cardWidth;
-    private int cardBottom;
+    private int panelBottom;
+    private int contentTop;
     private int legendTop;
+    private int stageBottom;
 
     public DurabilityConfigScreen(Screen parent) {
         super(Component.translatable("durabilitytweaks.title"));
         this.parent = parent;
     }
 
-    // ------------------------------------------------------------------ layout & widgets
+    // ------------------------------------------------------------------ layout
 
     @Override
     protected void init() {
         refreshers.clear();
-        int gap = 8;
-        cardWidth = Math.min(220, (this.width - 3 * gap) / 2);
-        leftX = this.width / 2 - gap / 2 - cardWidth;
+        tiles.clear();
+        labels.clear();
+
+        int gap = 10;
+        panelWidth = Math.min(230, (this.width - 3 * gap) / 2);
+        leftX = this.width / 2 - gap / 2 - panelWidth;
         rightX = this.width / 2 + gap / 2;
-        cardBottom = this.height - BOTTOM_BAR - 4;
+        panelBottom = this.height - 32;
+        contentTop = TOP + TAB_HEIGHT + 6;
 
-        DurabilityConfig config = DurabilityConfig.get();
-        int buttonX = leftX + 6;
-        int buttonWidth = cardWidth - 12;
-        int optionCount = 7;
-        int available = cardBottom - (TOP + HEADER_HEIGHT + 4) - 4;
-        int spacing = BUTTON_HEIGHT + Math.max(0, Math.min(4, (available - optionCount * BUTTON_HEIGHT) / (optionCount - 1)));
-        int y = TOP + HEADER_HEIGHT + 5;
+        switch (tab) {
+            case 0 -> initLookTab();
+            case 1 -> initNumberTab();
+            default -> initGeneralTab();
+        }
 
-        Button style = cycle("style", () -> config.style, v -> config.style = v, buttonX, y, buttonWidth);
-        y += spacing;
-        Button palette = cycle("palette", () -> config.palette, v -> config.palette = v, buttonX, y, buttonWidth);
-        y += spacing;
-        Button outline = cycle("outline", () -> config.outlineWidth, v -> config.outlineWidth = v, buttonX, y, buttonWidth);
-        y += spacing;
-        Button number = cycle("number", () -> config.numberMode, v -> config.numberMode = v, buttonX, y, buttonWidth);
-        y += spacing;
-        Button format = cycle("format", () -> config.numberFormat, v -> config.numberFormat = v, buttonX, y, buttonWidth);
-        y += spacing;
-        Button showAtFull = toggle("show_at_full", () -> config.showAtFull, v -> config.showAtFull = v, buttonX, y, buttonWidth);
-        y += spacing;
-        cycle("filter", () -> config.armorFilter, v -> config.armorFilter = v, buttonX, y, buttonWidth);
+        // Preview: slider at the bottom, colour scale above it, the armor stage fills the rest
+        int sliderY = panelBottom - BUTTON_HEIGHT - 6;
+        this.addRenderableWidget(new PreviewSlider(rightX + 6, sliderY, panelWidth - 12, BUTTON_HEIGHT));
+        legendTop = sliderY - 6 - 2 * 13;
+        stageBottom = legendTop - 6;
 
-        // Options that do nothing with the current settings are greyed out
-        refreshers.add(() -> {
-            DurabilityConfig c = DurabilityConfig.get();
-            boolean on = c.enabled;
-            style.active = on;
-            palette.active = on && c.style != ColorStyle.NONE;
-            outline.active = on && c.style == ColorStyle.OUTLINE;
-            number.active = on;
-            format.active = on && c.numberMode != NumberMode.OFF;
-            showAtFull.active = on && c.numberMode != NumberMode.OFF;
-        });
-
-        // Preview durability slider at the bottom of the preview card
-        int sliderY = cardBottom - BUTTON_HEIGHT - 5;
-        this.addRenderableWidget(new PreviewSlider(rightX + 6, sliderY, cardWidth - 12, BUTTON_HEIGHT));
-        legendTop = sliderY - 4 - 2 * 13;
-
-        // Bottom bar: master switch, reset, done
-        int barY = this.height - BOTTOM_BAR + 5;
-        int barWidth = Math.min(100, (this.width - 4 * gap) / 3);
-        int barX = this.width / 2 - (3 * barWidth + 2 * gap) / 2;
-        toggle("enabled", () -> config.enabled, v -> config.enabled = v, barX, barY, barWidth);
-        this.addRenderableWidget(Button.builder(Component.translatable("durabilitytweaks.reset"), b -> {
-                DurabilityConfig.reset();
-                this.rebuildWidgets();
-            })
-            .bounds(barX + barWidth + gap, barY, barWidth, BUTTON_HEIGHT)
-            .tooltip(Tooltip.create(Component.translatable("durabilitytweaks.reset.tooltip")))
-            .build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> this.onClose())
-            .bounds(barX + 2 * (barWidth + gap), barY, barWidth, BUTTON_HEIGHT)
+            .bounds(this.width / 2 - 75, this.height - 26, 150, BUTTON_HEIGHT)
             .build());
 
         refresh();
     }
 
-    private <E extends Enum<E> & OptionEnum> Button cycle(String option, Supplier<E> getter, Consumer<E> setter, int x, int y, int width) {
-        Button button = Button.builder(Component.empty(), b -> {
-                setter.accept(OptionEnum.next(getter.get()));
-                DurabilityConfig.save();
-                refresh();
-            })
-            .bounds(x, y, width, BUTTON_HEIGHT)
+    private void initLookTab() {
+        DurabilityConfig config = DurabilityConfig.get();
+        int y = contentTop;
+        labels.add(new Label(Component.translatable("durabilitytweaks.caption.style"), leftX + 8, y));
+        y += 11;
+        y = addTiles(y, ColorStyle.values(), () -> config.style, v -> config.style = v, "style");
+        y += 6;
+        Button palette = row(y, "palette", cycleButton(() -> config.palette, v -> config.palette = v, "palette"));
+        y += ROW;
+        Button outline = row(y, "outline", cycleButton(() -> config.outlineWidth, v -> config.outlineWidth = v, "outline"));
+        refreshers.add(() -> {
+            palette.active = config.style != ColorStyle.NONE;
+            outline.active = config.style == ColorStyle.OUTLINE;
+        });
+    }
+
+    private void initNumberTab() {
+        DurabilityConfig config = DurabilityConfig.get();
+        int y = contentTop;
+        labels.add(new Label(Component.translatable("durabilitytweaks.caption.number"), leftX + 8, y));
+        y += 11;
+        y = addTiles(y, NumberMode.values(), () -> config.numberMode, v -> config.numberMode = v, "number");
+        y += 6;
+        Button format = row(y, "format", cycleButton(() -> config.numberFormat, v -> config.numberFormat = v, "format"));
+        y += ROW;
+        Button full = row(y, "show_at_full", toggleButton(() -> config.showAtFull, v -> config.showAtFull = v));
+        refreshers.add(() -> {
+            format.active = config.numberMode != NumberMode.OFF;
+            full.active = config.numberMode != NumberMode.OFF;
+        });
+    }
+
+    private void initGeneralTab() {
+        DurabilityConfig config = DurabilityConfig.get();
+        int y = contentTop + 2;
+        row(y, "enabled", toggleButton(() -> config.enabled, v -> config.enabled = v));
+        y += ROW;
+        row(y, "filter", cycleButton(() -> config.armorFilter, v -> config.armorFilter = v, "filter"));
+        y += ROW;
+        row(y, "reset", new ButtonSpec(Button.builder(Component.translatable("durabilitytweaks.reset"), b -> {
+            DurabilityConfig.reset();
+            this.rebuildWidgets();
+        }), button -> { }));
+        y += ROW + 8;
+        labels.add(new Label(Component.translatable("durabilitytweaks.keybind_hint",
+            DurabilityTweaks.openSettingsKey().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.YELLOW)), leftX + 8, y));
+        labels.add(new Label(Component.translatable("durabilitytweaks.client_only"), leftX + 8, y + 12));
+    }
+
+    /** A row of picture tiles for an option with few values; returns the y below it. */
+    private <E extends Enum<E> & OptionEnum> int addTiles(int y, E[] values, Supplier<E> getter, Consumer<E> setter, String option) {
+        int count = values.length;
+        int tileGap = 4;
+        int tileWidth = (panelWidth - 16 - tileGap * (count - 1)) / count;
+        int available = panelBottom - y - 2 * ROW - 14;
+        int thumbScale = Math.max(1, Math.min((tileWidth - 8) / 16, (available - 16) / 20));
+        thumbScale = Math.min(thumbScale, 3);
+        int tileHeight = 20 * thumbScale + 20;
+        for (int i = 0; i < count; i++) {
+            E value = values[i];
+            int x = leftX + 8 + i * (tileWidth + tileGap);
+            tiles.add(new Tile(x, y, tileWidth, tileHeight, thumbScale,
+                Component.translatable("durabilitytweaks.option." + value.key()),
+                Component.translatable("durabilitytweaks.option." + value.key() + ".tooltip"),
+                () -> getter.get() == value,
+                () -> setter.accept(value),
+                value));
+        }
+        return y + tileHeight;
+    }
+
+    /** A settings row: label on the left, button on the right. */
+    private Button row(int y, String option, ButtonSpec spec) {
+        int buttonWidth = Math.min(116, panelWidth / 2);
+        labels.add(new Label(Component.translatable("durabilitytweaks.option." + option), leftX + 8, y + 6));
+        Button button = spec.builder()
+            .bounds(leftX + panelWidth - 8 - buttonWidth, y, buttonWidth, BUTTON_HEIGHT)
             .tooltip(Tooltip.create(Component.translatable("durabilitytweaks.option." + option + ".tooltip")))
             .build();
-        refreshers.add(() -> button.setMessage(label(option,
-            Component.translatable("durabilitytweaks.option." + getter.get().key()).withStyle(ChatFormatting.YELLOW))));
+        spec.bind().accept(button);
         return this.addRenderableWidget(button);
     }
 
-    private Button toggle(String option, Supplier<Boolean> getter, Consumer<Boolean> setter, int x, int y, int width) {
-        Button button = Button.builder(Component.empty(), b -> {
-                setter.accept(!getter.get());
-                DurabilityConfig.save();
-                refresh();
-            })
-            .bounds(x, y, width, BUTTON_HEIGHT)
-            .tooltip(Tooltip.create(Component.translatable("durabilitytweaks.option." + option + ".tooltip")))
-            .build();
-        refreshers.add(() -> button.setMessage(label(option, getter.get()
+    /** A button under construction plus what to do with the finished button (keep its label up to date). */
+    private record ButtonSpec(Button.Builder builder, Consumer<Button> bind) {
+    }
+
+    private <E extends Enum<E> & OptionEnum> ButtonSpec cycleButton(Supplier<E> getter, Consumer<E> setter, String option) {
+        Button.Builder builder = Button.builder(Component.empty(), b -> {
+            setter.accept(OptionEnum.next(getter.get()));
+            changed();
+        });
+        return new ButtonSpec(builder, button -> refreshers.add(() -> button.setMessage(
+            Component.translatable("durabilitytweaks.option." + getter.get().key()).withStyle(ChatFormatting.YELLOW))));
+    }
+
+    private ButtonSpec toggleButton(Supplier<Boolean> getter, Consumer<Boolean> setter) {
+        Button.Builder builder = Button.builder(Component.empty(), b -> {
+            setter.accept(!getter.get());
+            changed();
+        });
+        return new ButtonSpec(builder, button -> refreshers.add(() -> button.setMessage(getter.get()
             ? Component.translatable("options.on").withStyle(ChatFormatting.GREEN)
             : Component.translatable("options.off").withStyle(ChatFormatting.RED))));
-        return this.addRenderableWidget(button);
     }
 
-    private static Component label(String option, Component value) {
-        return Component.translatable("durabilitytweaks.option." + option).append(": ").append(value);
+    private void changed() {
+        DurabilityConfig.save();
+        refresh();
     }
 
     private void refresh() {
@@ -175,13 +239,62 @@ public class DurabilityConfigScreen extends Screen {
         Screens.open(this.minecraft, parent);
     }
 
+    // ------------------------------------------------------------------ input (version specific signature)
+
+    //? if >=1.21.9 {
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0 && clickCustom(event.x(), event.y())) {
+            return true;
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+    //?} else {
+    /*@Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && clickCustom(mouseX, mouseY)) {
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+    *///?}
+
+    /** Tabs and picture tiles are drawn by the screen itself, so it also handles their clicks. */
+    private boolean clickCustom(double mouseX, double mouseY) {
+        for (int i = 0; i < 3; i++) {
+            if (tabHit(i, mouseX, mouseY)) {
+                if (tab != i) {
+                    tab = i;
+                    clickSound();
+                    this.rebuildWidgets();
+                }
+                return true;
+            }
+        }
+        for (Tile tile : tiles) {
+            if (tile.contains(mouseX, mouseY)) {
+                if (!tile.selected.get()) {
+                    tile.select.run();
+                    clickSound();
+                    changed();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void clickSound() {
+        this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
     // ------------------------------------------------------------------ rendering (version specific entry points)
 
     //? if >=26.1 {
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractBackground(graphics, mouseX, mouseY, delta);
-        drawCards(new Gfx(graphics));
+        drawPanels(new Gfx(graphics), mouseX, mouseY);
     }
 
     @Override
@@ -193,7 +306,7 @@ public class DurabilityConfigScreen extends Screen {
     /*@Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         super.renderBackground(graphics, mouseX, mouseY, delta);
-        drawCards(new Gfx(graphics));
+        drawPanels(new Gfx(graphics), mouseX, mouseY);
     }
 
     @Override
@@ -205,41 +318,94 @@ public class DurabilityConfigScreen extends Screen {
 
     // ------------------------------------------------------------------ drawing
 
-    private void drawCards(Gfx gfx) {
-        drawCard(gfx, leftX, Component.translatable("durabilitytweaks.section.settings"));
-        drawCard(gfx, rightX, Component.translatable("durabilitytweaks.section.preview"));
-    }
+    private void drawPanels(Gfx gfx, int mouseX, int mouseY) {
+        // Settings panel with its tab strip
+        gfx.fill(leftX, TOP, leftX + panelWidth, panelBottom, PANEL);
+        gfx.outline(leftX - 1, TOP - 1, panelWidth + 2, panelBottom - TOP + 2, PANEL_BORDER);
+        for (int i = 0; i < 3; i++) {
+            int[] r = tabRect(i);
+            boolean selected = tab == i;
+            boolean hovered = tabHit(i, mouseX, mouseY);
+            gfx.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], selected ? PANEL : hovered ? TAB_HOVER : TAB_IDLE);
+            if (selected) {
+                gfx.fill(r[0], r[1], r[0] + r[2], r[1] + 2, ACCENT);
+            }
+        }
+        gfx.fill(leftX, TOP + TAB_HEIGHT, leftX + panelWidth, TOP + TAB_HEIGHT + 1, PANEL_BORDER);
 
-    private void drawCard(Gfx gfx, int x, Component title) {
-        gfx.fill(x, TOP, x + cardWidth, cardBottom, CARD_BG);
-        gfx.fill(x, TOP, x + cardWidth, TOP + HEADER_HEIGHT, CARD_HEADER);
-        gfx.fill(x, TOP + HEADER_HEIGHT, x + cardWidth, TOP + HEADER_HEIGHT + 1, ACCENT);
-        gfx.outline(x - 1, TOP - 1, cardWidth + 2, cardBottom - TOP + 2, CARD_BORDER);
-        gfx.text(this.font, title, x + 6, TOP + 3, TEXT, false);
+        // Preview panel with a sky coloured stage for the armor
+        gfx.fill(rightX, TOP, rightX + panelWidth, panelBottom, PANEL);
+        gfx.outline(rightX - 1, TOP - 1, panelWidth + 2, panelBottom - TOP + 2, PANEL_BORDER);
+        gfx.gradient(rightX + 1, TOP + 1, rightX + panelWidth - 1, stageBottom, STAGE_TOP, STAGE_BOTTOM);
     }
 
     private void drawContent(Gfx gfx, int mouseX, int mouseY) {
-        // Title and author
-        MutableComponent title = this.title.copy().withStyle(ChatFormatting.BOLD);
-        gfx.centeredText(this.font, title, this.width / 2, 8, ACCENT);
-        gfx.centeredText(this.font, Component.translatable("durabilitytweaks.subtitle"), this.width / 2, 20, MUTED);
+        gfx.centeredText(this.font, this.title.copy().withStyle(ChatFormatting.BOLD), this.width / 2, 7, ACCENT);
+        gfx.centeredText(this.font, Component.translatable("durabilitytweaks.subtitle"), this.width / 2, 19, MUTED);
 
-        if (!DurabilityConfig.get().enabled) {
-            gfx.centeredText(this.font, Component.translatable("durabilitytweaks.disabled"), rightX + cardWidth / 2,
-                (TOP + legendTop) / 2, MUTED);
-        } else {
-            drawPreview(gfx);
+        String[] tabKeys = {"look", "number", "general"};
+        for (int i = 0; i < 3; i++) {
+            int[] r = tabRect(i);
+            gfx.centeredText(this.font, Component.translatable("durabilitytweaks.tab." + tabKeys[i]),
+                r[0] + r[2] / 2, r[1] + 6, tab == i ? ACCENT : MUTED);
         }
-        drawLegend(gfx, mouseX, mouseY);
+        for (Label label : labels) {
+            gfx.text(this.font, label.text, label.x, label.y, MUTED, false);
+        }
+
+        Component tooltip = null;
+        for (Tile tile : tiles) {
+            drawTile(gfx, tile, mouseX, mouseY);
+            if (tile.contains(mouseX, mouseY)) {
+                tooltip = tile.tooltip;
+            }
+        }
+
+        if (DurabilityConfig.get().enabled) {
+            drawStage(gfx);
+        } else {
+            gfx.centeredText(this.font, Component.translatable("durabilitytweaks.disabled"), rightX + panelWidth / 2, (TOP + stageBottom) / 2, 0xFF30343C);
+        }
+        Component legendTooltip = drawLegend(gfx, mouseX, mouseY);
+        if (legendTooltip != null) {
+            tooltip = legendTooltip;
+        }
+        if (tooltip != null) {
+            gfx.tooltip(this.font, tooltip, mouseX, mouseY);
+        }
     }
 
-    /** Two front-facing armor sets (netherite, diamond) at the slider's durability. */
-    private void drawPreview(Gfx gfx) {
-        int areaTop = TOP + HEADER_HEIGHT + 6;
-        int labelHeight = 11;
-        int areaHeight = legendTop - 6 - areaTop - labelHeight;
-        int slotWidth = (cardWidth - 12) / PREVIEW_ARMOR.length;
-        int scale = Math.max(1, Math.min(areaHeight / 32, (slotWidth - 8) / 16));
+    private void drawTile(Gfx gfx, Tile tile, int mouseX, int mouseY) {
+        boolean selected = tile.selected.get();
+        boolean hovered = tile.contains(mouseX, mouseY);
+        gfx.fill(tile.x, tile.y, tile.x + tile.width, tile.y + tile.height, selected ? TILE_SELECTED : hovered ? TILE_HOVER : TILE);
+        gfx.outline(tile.x, tile.y, tile.width, tile.height, selected ? ACCENT : hovered ? MUTED : PANEL_BORDER);
+
+        // Thumbnail: helmet and chestplate of netherite armor with this option applied
+        DurabilityConfig config = DurabilityConfig.get();
+        ColorStyle style = tile.value instanceof ColorStyle s ? s : config.style;
+        NumberMode numberMode = tile.value instanceof NumberMode n ? n : config.numberMode;
+        DurabilityInfo info = NETHERITE.info(TILE_PERCENT);
+        ArmorTextureManager.Resolved outer = ArmorTextureManager.resolve(NETHERITE.outerTexture(), ArmorLayout.Kind.OUTER, info, style, numberMode);
+        int scale = tile.thumbScale;
+        int thumbX = tile.x + tile.width / 2 - 8 * scale;
+        int thumbY = tile.y + 5;
+        if (outer != null) {
+            drawFace(gfx, outer, ArmorLayout.BODY, 4, 8, thumbX, thumbY, scale);
+            drawFace(gfx, outer, ArmorLayout.ARM, 0, 8, thumbX, thumbY, scale);
+            drawFace(gfx, outer, ArmorLayout.ARM, 12, 8, thumbX, thumbY, scale);
+            drawFace(gfx, outer, ArmorLayout.HEAD, 4, 0, thumbX, thumbY, scale);
+        }
+        gfx.centeredText(this.font, tile.label, tile.x + tile.width / 2, tile.y + tile.height - 12, selected ? ACCENT : TEXT);
+    }
+
+    /** Netherite and diamond armor side by side at the slider's durability. */
+    private void drawStage(Gfx gfx) {
+        int areaTop = TOP + 8;
+        int labelHeight = 12;
+        int areaHeight = stageBottom - areaTop - labelHeight - 4;
+        int slotWidth = (panelWidth - 12) / PREVIEW_ARMOR.length;
+        int scale = Math.max(1, Math.min(areaHeight / 32, (slotWidth - 12) / 16));
         int dollHeight = 32 * scale;
         int dollTop = areaTop + Math.max(0, (areaHeight - dollHeight) / 2);
 
@@ -247,11 +413,16 @@ public class DurabilityConfigScreen extends Screen {
             PreviewArmor armor = PREVIEW_ARMOR[i];
             int centerX = rightX + 6 + slotWidth * i + slotWidth / 2;
             DurabilityInfo info = armor.info(previewPercent);
+            // Soft shadow under the armor
+            gfx.fill(centerX - 7 * scale, dollTop + dollHeight - 1, centerX + 7 * scale, dollTop + dollHeight + 1, 0x30000000);
             drawArmorSet(gfx, armor, info, centerX - 8 * scale, dollTop, scale);
 
-            Component name = Component.translatable("durabilitytweaks.material." + armor.name);
+            Component name = Component.translatable("durabilitytweaks.material." + armor.name).append(" " + info.percentDisplay() + "%");
+            int width = this.font.width(name) + 8;
+            int labelY = dollTop + dollHeight + 4;
+            gfx.fill(centerX - width / 2, labelY - 2, centerX + width / 2, labelY + 10, 0xA0101318);
             int color = info.isFull() ? TEXT : DurabilityConfig.get().palette.palette.color(armor.tier.paletteSlot(info.band()));
-            gfx.centeredText(this.font, name.copy().append(" " + info.percentDisplay() + "%"), centerX, dollTop + dollHeight + 3, color);
+            gfx.centeredText(this.font, name, centerX, labelY, color);
         }
     }
 
@@ -282,15 +453,15 @@ public class DurabilityConfigScreen extends Screen {
             texture.width(), texture.height());
     }
 
-    /** Colour scale of both tiers; the band of the preview durability is framed, hovering shows its range. */
-    private void drawLegend(Gfx gfx, int mouseX, int mouseY) {
+    /** Colour scale of both tiers; the band of the preview durability is framed. Returns the hovered band's tooltip. */
+    private Component drawLegend(Gfx gfx, int mouseX, int mouseY) {
         Palette palette = DurabilityConfig.get().palette.palette;
         int labelWidth = 0;
         for (PreviewArmor armor : PREVIEW_ARMOR) {
             labelWidth = Math.max(labelWidth, this.font.width(Component.translatable("durabilitytweaks.material." + armor.name)));
         }
-        int barLeft = rightX + 6 + labelWidth + 6;
-        int barRight = rightX + cardWidth - 6;
+        int barLeft = rightX + 8 + labelWidth + 6;
+        int barRight = rightX + panelWidth - 8;
         Component hovered = null;
 
         for (int row = 0; row < PREVIEW_ARMOR.length; row++) {
@@ -298,28 +469,47 @@ public class DurabilityConfigScreen extends Screen {
             DurabilityTier tier = armor.tier;
             int y = legendTop + row * 13;
             Component name = Component.translatable("durabilitytweaks.material." + armor.name);
-            gfx.text(this.font, name, rightX + 6, y + 1, MUTED, false);
+            gfx.text(this.font, name, rightX + 8, y + 1, MUTED, false);
 
             int current = armor.info(previewPercent).band();
             int bands = tier.bandCount();
             for (int band = 0; band < bands; band++) {
                 int x0 = barLeft + (barRight - barLeft) * band / bands;
                 int x1 = barLeft + (barRight - barLeft) * (band + 1) / bands;
-                gfx.fill(x0, y, x1, y + 10, palette.color(tier.paletteSlot(band)));
+                gfx.fill(x0, y, x1 - 1, y + 10, palette.color(tier.paletteSlot(band)));
                 if (band == current) {
-                    gfx.outline(x0 - 1, y - 1, x1 - x0 + 2, 12, TEXT);
+                    gfx.outline(x0 - 1, y - 1, x1 - x0 + 1, 12, TEXT);
                 }
                 if (mouseX >= x0 && mouseX < x1 && mouseY >= y && mouseY < y + 10) {
                     hovered = Component.translatable("durabilitytweaks.legend.range", name, tier.lowerBound(band), tier.upperBound(band));
                 }
             }
         }
-        if (hovered != null) {
-            gfx.tooltip(this.font, hovered, mouseX, mouseY);
-        }
+        return hovered;
+    }
+
+    private int[] tabRect(int index) {
+        int width = panelWidth / 3;
+        int x = leftX + index * width;
+        return new int[] {x, TOP, index == 2 ? panelWidth - 2 * width : width, TAB_HEIGHT};
+    }
+
+    private boolean tabHit(int index, double mouseX, double mouseY) {
+        int[] r = tabRect(index);
+        return mouseX >= r[0] && mouseX < r[0] + r[2] && mouseY >= r[1] && mouseY < r[1] + r[3];
     }
 
     // ------------------------------------------------------------------ helpers
+
+    private record Label(Component text, int x, int y) {
+    }
+
+    private record Tile(int x, int y, int width, int height, int thumbScale, Component label, Component tooltip,
+                        Supplier<Boolean> selected, Runnable select, Object value) {
+        boolean contains(double mouseX, double mouseY) {
+            return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
+        }
+    }
 
     private record PreviewArmor(String name, DurabilityTier tier, int maxDamage) {
         DurabilityInfo info(int percent) {
@@ -328,19 +518,11 @@ public class DurabilityConfigScreen extends Screen {
         }
 
         Identifier outerTexture() {
-            //? if >=1.21.2 {
-            return Identifier.withDefaultNamespace("textures/entity/equipment/humanoid/" + name + ".png");
-            //?} else {
-            /*return Identifier.withDefaultNamespace("textures/models/armor/" + name + "_layer_1.png");
-            *///?}
+            return ArmorTextureManager.vanillaTexture(name, ArmorLayout.Kind.OUTER);
         }
 
         Identifier leggingsTexture() {
-            //? if >=1.21.2 {
-            return Identifier.withDefaultNamespace("textures/entity/equipment/humanoid_leggings/" + name + ".png");
-            //?} else {
-            /*return Identifier.withDefaultNamespace("textures/models/armor/" + name + "_layer_2.png");
-            *///?}
+            return ArmorTextureManager.vanillaTexture(name, ArmorLayout.Kind.LEGGINGS);
         }
     }
 

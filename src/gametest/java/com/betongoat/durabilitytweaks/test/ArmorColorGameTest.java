@@ -1,110 +1,126 @@
 package com.betongoat.durabilitytweaks.test;
 
+import com.betongoat.durabilitytweaks.SelfCheck;
 import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.NumberMode;
 import com.betongoat.durabilitytweaks.gui.DurabilityConfigScreen;
-import net.minecraft.client.CameraType;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 
 /**
- * Starts the real game, puts damaged armor on armor stands and takes screenshots of every style
- * plus the settings screen. Run with {@code ./gradlew :<version>:runClientGameTest}.
+ * Starts the real game, checks the mod works, and shoots the gallery: rows of armor stands in
+ * every style on a quartz platform, a player close-up and the settings screen, all at 1920x1080.
+ * Run with {@code ./gradlew :<version>:runClientGameTest}; images land in the run's screenshots folder.
  */
 public class ArmorColorGameTest implements FabricClientGameTest {
-    private static final int[] PERCENTS = {100, 95, 75, 55, 35, 17, 7, 2};
     private static final String[] SLOTS = {"head", "chest", "legs", "feet"};
     private static final String[] PIECES = {"helmet", "chestplate", "leggings", "boots"};
     private static final int[] NETHERITE_MAX = {407, 592, 555, 481};
     private static final int[] DIAMOND_MAX = {363, 528, 495, 429};
+    private static final int[] NETHERITE_ROW = {100, 90, 75, 60, 45, 30, 17, 7};
+    private static final int[] DIAMOND_ROW = {100, 85, 65, 50, 35, 15, 8, 3};
 
     @Override
     public void runTest(ClientGameTestContext context) {
-        context.setScreen(() -> new DurabilityConfigScreen(null));
-        context.waitTicks(5);
-        context.takeScreenshot("durabilitytweaks_settings");
-        context.setScreen(() -> null);
+        context.runOnClient(client -> SelfCheck.run());
+        context.getInput().resizeWindow(1920, 1080);
 
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
-            waitForChunks(context);
+            waitForWorld(context);
+            context.runOnClient(ArmorColorGameTest::hideHud);
 
             int y = context.computeOnClient(client -> (int) Math.floor(client.player.getY()));
-            world.getServer().runCommand("time set noon");
-            world.getServer().runCommand("tp @a 0.5 " + y + " 0.5 0 12");
+            command(world, "time set noon");
+            command(world, "weather clear");
+            command(world, "fill -7 " + (y - 1) + " -1 7 " + (y - 1) + " 9 minecraft:smooth_quartz");
+            command(world, "tp @a 0.5 " + y + " 0.5 0 9");
 
-            spawnRow(world, "netherite", NETHERITE_MAX, y);
-            waitForChunks(context);
-            screenshots(context, "netherite");
+            // Netherite row, classic full colour and with numbers
+            spawnRow(world, "netherite", NETHERITE_MAX, NETHERITE_ROW, y);
+            waitForWorld(context);
+            shoot(context, "gallery_1_netherite_full", ColorStyle.FULL, NumberMode.OFF);
+            shoot(context, "gallery_2_netherite_numbers", ColorStyle.FULL, NumberMode.HELMET_AND_CHESTPLATE);
 
-            world.getServer().runCommand("kill @e[type=minecraft:armor_stand]");
-            spawnRow(world, "diamond", DIAMOND_MAX, y);
+            // Diamond row, full colour and outline + number
+            command(world, "kill @e[type=minecraft:armor_stand]");
+            spawnRow(world, "diamond", DIAMOND_MAX, DIAMOND_ROW, y);
             context.waitTicks(20);
-            screenshots(context, "diamond");
+            shoot(context, "gallery_3_diamond_full", ColorStyle.FULL, NumberMode.OFF);
+            shoot(context, "gallery_4_diamond_outline", ColorStyle.OUTLINE, NumberMode.HELMET);
+            shoot(context, "gallery_5_diamond_number_only", ColorStyle.NONE, NumberMode.HELMET_AND_CHESTPLATE);
 
-            // The same armor on a player, seen from the front
-            world.getServer().runCommand("kill @e[type=minecraft:armor_stand]");
-            world.getServer().runCommand("tp @a 0.5 " + y + " 0.5 0 0");
+            // A player wearing worn netherite, every piece at a different durability
+            command(world, "kill @e[type=minecraft:armor_stand]");
+            command(world, "tp @a 0.5 " + y + " 3.5 0 0");
+            int[] mixed = {80, 45, 62, 12};
+            for (int slot = 0; slot < SLOTS.length; slot++) {
+                command(world, "item replace entity @a armor." + SLOTS[slot] + " with minecraft:netherite_" + PIECES[slot]
+                    + "[damage=" + damage(NETHERITE_MAX[slot], mixed[slot]) + "]");
+            }
             context.runOnClient(client -> client.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
-            equipPlayer(world, "netherite", NETHERITE_MAX, 45);
-            waitForChunks(context);
+            context.waitTicks(20);
+            shoot(context, "gallery_6_player", ColorStyle.FULL, NumberMode.OFF);
+            shoot(context, "gallery_7_player_numbers", ColorStyle.FULL, NumberMode.HELMET_AND_CHESTPLATE);
+
+            // Settings screen over the world
             style(context, ColorStyle.FULL, NumberMode.OFF);
-            context.takeScreenshot("durabilitytweaks_player_netherite_45_full");
-            style(context, ColorStyle.FULL, NumberMode.HELMET_AND_CHESTPLATE);
-            context.takeScreenshot("durabilitytweaks_player_netherite_45_full_number");
-            style(context, ColorStyle.OUTLINE, NumberMode.HELMET);
-            context.takeScreenshot("durabilitytweaks_player_netherite_45_outline_number");
-            equipPlayer(world, "diamond", DIAMOND_MAX, 8);
+            context.setScreen(() -> new DurabilityConfigScreen(null));
             context.waitTicks(10);
-            style(context, ColorStyle.FULL, NumberMode.HELMET);
-            context.takeScreenshot("durabilitytweaks_player_diamond_8_full_number");
+            context.takeScreenshot("gallery_8_settings");
+            context.setScreen(() -> null);
             context.runOnClient(client -> client.options.setCameraType(CameraType.FIRST_PERSON));
 
             DurabilityConfig.reset();
         }
     }
 
+    private static void hideHud(Minecraft client) {
+        //? if >=26.2 {
+        if (!client.gui.hud.isHidden()) {
+            client.gui.hud.toggle();
+        }
+        //?} else {
+        /*client.options.hideGui = true;
+        *///?}
+    }
+
     /**
      * The chunk waiting API moved between versions (getClientWorld / getClientLevel / getConnection),
      * so this waits for the player and then gives the chunks a few seconds instead.
      */
-    private static void waitForChunks(ClientGameTestContext context) {
+    private static void waitForWorld(ClientGameTestContext context) {
         context.waitFor(client -> client.player != null && client.level != null);
         context.waitTicks(100);
     }
 
-    /** Eight armor stands facing the player, from full to almost broken armor. */
-    private static void spawnRow(TestSingleplayerContext world, String material, int[] maxDamage, int y) {
-        for (int i = 0; i < PERCENTS.length; i++) {
+    private static void command(TestSingleplayerContext world, String command) {
+        world.getServer().runCommand(command);
+    }
+
+    private static int damage(int maxDamage, int percentLeft) {
+        return (int) Math.round(maxDamage * (100 - percentLeft) / 100.0);
+    }
+
+    /** Eight armor stands facing the camera, from full to almost broken armor. */
+    private static void spawnRow(TestSingleplayerContext world, String material, int[] maxDamage, int[] percents, int y) {
+        for (int i = 0; i < percents.length; i++) {
             String tag = "dt" + i;
-            double x = -3.5 + i;
-            world.getServer().runCommand("summon minecraft:armor_stand " + x + " " + y + " 4.5 {Rotation:[180f,0f],NoGravity:1b,ShowArms:1b,Tags:[\"" + tag + "\"]}");
+            double x = 4.0 - i;
+            command(world, "summon minecraft:armor_stand " + x + " " + y + " 4.5 {Rotation:[180f,0f],NoGravity:1b,ShowArms:1b,Tags:[\"" + tag + "\"]}");
             for (int slot = 0; slot < SLOTS.length; slot++) {
-                int damage = (int) Math.round(maxDamage[slot] * (100 - PERCENTS[i]) / 100.0);
-                world.getServer().runCommand("item replace entity @e[tag=" + tag + ",limit=1] armor." + SLOTS[slot]
-                    + " with minecraft:" + material + "_" + PIECES[slot] + "[damage=" + damage + "]");
+                command(world, "item replace entity @e[tag=" + tag + ",limit=1] armor." + SLOTS[slot]
+                    + " with minecraft:" + material + "_" + PIECES[slot] + "[damage=" + damage(maxDamage[slot], percents[i]) + "]");
             }
         }
     }
 
-    private static void equipPlayer(TestSingleplayerContext world, String material, int[] maxDamage, int percent) {
-        for (int slot = 0; slot < SLOTS.length; slot++) {
-            int damage = (int) Math.round(maxDamage[slot] * (100 - percent) / 100.0);
-            world.getServer().runCommand("item replace entity @a armor." + SLOTS[slot]
-                + " with minecraft:" + material + "_" + PIECES[slot] + "[damage=" + damage + "]");
-        }
-    }
-
-    private static void screenshots(ClientGameTestContext context, String material) {
-        style(context, ColorStyle.FULL, NumberMode.OFF);
-        context.takeScreenshot("durabilitytweaks_" + material + "_full");
-        style(context, ColorStyle.FULL, NumberMode.HELMET_AND_CHESTPLATE);
-        context.takeScreenshot("durabilitytweaks_" + material + "_full_number");
-        style(context, ColorStyle.OUTLINE, NumberMode.HELMET);
-        context.takeScreenshot("durabilitytweaks_" + material + "_outline_number");
-        style(context, ColorStyle.NONE, NumberMode.HELMET_AND_CHESTPLATE);
-        context.takeScreenshot("durabilitytweaks_" + material + "_number_only");
+    private static void shoot(ClientGameTestContext context, String name, ColorStyle style, NumberMode numberMode) {
+        style(context, style, numberMode);
+        context.takeScreenshot(name);
     }
 
     private static void style(ClientGameTestContext context, ColorStyle style, NumberMode numberMode) {

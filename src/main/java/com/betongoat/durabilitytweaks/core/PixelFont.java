@@ -1,22 +1,22 @@
 package com.betongoat.durabilitytweaks.core;
 
-/** Tiny 3x5 bitmap font for painting numbers into armor textures. */
+/** 5x7 digits in the style of Minecraft's own font, for painting numbers into armor textures. */
 public final class PixelFont {
-    public static final int GLYPH_WIDTH = 3;
-    public static final int GLYPH_HEIGHT = 5;
+    public static final int GLYPH_WIDTH = 5;
+    public static final int GLYPH_HEIGHT = 7;
     public static final int SPACING = 1;
 
-    private static final String[] DIGITS = {
-        "111101101101111", // 0
-        "010110010010111", // 1
-        "111001111100111", // 2
-        "111001111001111", // 3
-        "101101111001001", // 4
-        "111100111001111", // 5
-        "111100111101111", // 6
-        "111001001001001", // 7
-        "111101111101111", // 8
-        "111101111001111", // 9
+    private static final String[][] DIGITS = {
+        {".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."}, // 0
+        {"..#..", ".##..", "..#..", "..#..", "..#..", "..#..", "#####"}, // 1
+        {".###.", "#...#", "....#", "..##.", ".#...", "#...#", "#####"}, // 2
+        {".###.", "#...#", "....#", "..##.", "....#", "#...#", ".###."}, // 3
+        {"...#.", "..##.", ".#.#.", "#..#.", "#####", "...#.", "...#."}, // 4
+        {"#####", "#....", "####.", "....#", "....#", "#...#", ".###."}, // 5
+        {"..##.", ".#...", "#....", "####.", "#...#", "#...#", ".###."}, // 6
+        {"#####", "#...#", "....#", "...#.", "..#..", "..#..", "..#.."}, // 7
+        {".###.", "#...#", "#...#", ".###.", "#...#", "#...#", ".###."}, // 8
+        {".###.", "#...#", "#...#", ".####", "....#", "...#.", ".##.."}, // 9
     };
 
     /** Width in font pixels of a digit string. */
@@ -29,7 +29,7 @@ public final class PixelFont {
         if (digit < '0' || digit > '9' || x < 0 || y < 0 || x >= GLYPH_WIDTH || y >= GLYPH_HEIGHT) {
             return false;
         }
-        return DIGITS[digit - '0'].charAt(y * GLYPH_WIDTH + x) == '1';
+        return DIGITS[digit - '0'][y].charAt(x) == '#';
     }
 
     /** Whether the font pixel (x, y) of a whole string is set. */

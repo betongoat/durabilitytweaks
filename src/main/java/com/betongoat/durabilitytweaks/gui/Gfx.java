@@ -38,6 +38,10 @@ public final class Gfx {
         graphics.fill(x0, y0, x1, y1, argb);
     }
 
+    public void gradient(int x0, int y0, int x1, int y1, int topArgb, int bottomArgb) {
+        graphics.fillGradient(x0, y0, x1, y1, topArgb, bottomArgb);
+    }
+
     /** One pixel wide rectangle border. */
     public void outline(int x, int y, int width, int height, int argb) {
         fill(x, y, x + width, y + 1, argb);

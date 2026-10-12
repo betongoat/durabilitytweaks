@@ -7,10 +7,12 @@ import com.betongoat.durabilitytweaks.config.ColorStyle;
  * so it works the same on every Minecraft version (and with any resource pack).
  */
 public final class TextureProcessor {
-    /** Textures are upscaled to at least this width when borders or numbers need sub-texel detail. */
-    private static final int DETAIL_WIDTH = 256;
-    private static final int TEXT_SHADOW = 0xFF141414;
-    private static final int WHITE = 0xFFFFFFFF;
+    /** Textures are upscaled to at least this width so borders get sub-texel detail. */
+    private static final int OUTLINE_WIDTH = 256;
+    /** ...and to this width when a number is painted, so the digits look crisp. */
+    private static final int TEXT_WIDTH = 640;
+    /** Light grey like Minecraft's own text. */
+    private static final int TEXT_LIGHT = 0xFFE8E8E8;
 
     /**
      * @param style        how the armor itself is coloured
@@ -25,9 +27,9 @@ public final class TextureProcessor {
             return text != null && (textOnHead || textOnChest);
         }
 
-        /** Number colour: white on fully coloured armor, the durability colour otherwise. */
+        /** Number colour: light grey on fully coloured armor, the durability colour otherwise. */
         public int textColor() {
-            return style == ColorStyle.FULL ? WHITE : color;
+            return style == ColorStyle.FULL ? TEXT_LIGHT : color;
         }
 
         /** Whether this request changes the texture at all. */
@@ -40,8 +42,8 @@ public final class TextureProcessor {
     }
 
     public static Image process(int[] source, int width, int height, Request request) {
-        boolean detail = request.style() == ColorStyle.OUTLINE || request.hasText();
-        int factor = detail ? Math.max(1, (DETAIL_WIDTH + width - 1) / width) : 1;
+        int target = request.hasText() ? TEXT_WIDTH : request.style() == ColorStyle.OUTLINE ? OUTLINE_WIDTH : width;
+        int factor = Math.max(1, (target + width - 1) / width);
         int w = width * factor;
         int h = height * factor;
         int[] out = upscale(source, width, height, factor);
@@ -154,31 +156,27 @@ public final class TextureProcessor {
     }
 
     /**
-     * Paints a number centred on a face, with a dark shadow ring so it stays readable on any colour.
+     * Paints a number centred on a face in Minecraft's text style: light digits with a soft
+     * shadow that darkens the armor underneath instead of a hard outline.
      *
-     * @param top place it near the top of the face (helmet forehead) instead of the upper middle (chest)
+     * @param top place it on the helmet's forehead instead of the upper chest
      */
     private static void drawNumber(int[] pixels, int w, int h, int[] face, String text, int color, boolean top) {
-        // Size the digits as if there were at least two, so "7" is not drawn bigger than "75"
-        int fontWidth = PixelFont.width(text);
-        int sizingWidth = Math.max(fontWidth, PixelFont.width("00"));
-        int maxHeight = top ? face[3] / 2 : face[3] * 3 / 5;
-        int scale = 1;
-        while (sizingWidth * (scale + 1) + 2 <= face[2] - 2 && PixelFont.GLYPH_HEIGHT * (scale + 1) + 2 <= maxHeight) {
-            scale++;
-        }
-        int textWidth = fontWidth * scale;
+        // Size every number as if it had three digits, so "7" and "100" share one font size
+        int sizingWidth = Math.max(PixelFont.width(text), PixelFont.width("000"));
+        int scale = Math.max(1, (int) (face[2] * 0.66 / sizingWidth));
+        int textWidth = PixelFont.width(text) * scale;
         int textHeight = PixelFont.GLYPH_HEIGHT * scale;
+        int shadow = Math.max(1, scale / 2);
         int x0 = face[0] + (face[2] - textWidth) / 2;
         int y0 = top
-            ? face[1] + Math.max(1, face[3] / 16)
-            : face[1] + (face[3] * 2 / 5) - textHeight / 2;
+            ? face[1] + Math.round(face[3] * 0.10f)
+            : face[1] + Math.round(face[3] * 0.30f) - textHeight / 2;
 
-        // Shadow ring first, then the glyphs on top of it.
-        for (int y = -1; y <= textHeight; y++) {
-            for (int x = -1; x <= textWidth; x++) {
-                if (!lit(text, x, y, scale) && nearLit(text, x, y, scale)) {
-                    set(pixels, w, h, x0 + x, y0 + y, TEXT_SHADOW);
+        for (int y = 0; y < textHeight + shadow; y++) {
+            for (int x = 0; x < textWidth + shadow; x++) {
+                if (!lit(text, x, y, scale) && lit(text, x - shadow, y - shadow, scale)) {
+                    darken(pixels, w, h, x0 + x, y0 + y, 0.45);
                 }
             }
         }
@@ -195,15 +193,18 @@ public final class TextureProcessor {
         return x >= 0 && y >= 0 && PixelFont.pixel(text, x / scale, y / scale);
     }
 
-    private static boolean nearLit(String text, int x, int y, int scale) {
-        for (int dy = -1; dy <= 1; dy++) {
-            for (int dx = -1; dx <= 1; dx++) {
-                if (lit(text, x + dx, y + dy, scale)) {
-                    return true;
-                }
-            }
+    private static void darken(int[] pixels, int w, int h, int x, int y, double amount) {
+        if (x >= 0 && y >= 0 && x < w && y < h && alpha(pixels[y * w + x]) > 0) {
+            int p = pixels[y * w + x];
+            pixels[y * w + x] = (p & 0xFF000000) | (mix(p, 0xFF000000, amount) & 0x00FFFFFF);
         }
-        return false;
+    }
+
+    private static int mix(int a, int b, double t) {
+        int r = (int) Math.round(((a >> 16) & 0xFF) * (1 - t) + ((b >> 16) & 0xFF) * t);
+        int g = (int) Math.round(((a >> 8) & 0xFF) * (1 - t) + ((b >> 8) & 0xFF) * t);
+        int bl = (int) Math.round((a & 0xFF) * (1 - t) + (b & 0xFF) * t);
+        return 0xFF000000 | (r << 16) | (g << 8) | bl;
     }
 
     private static void set(int[] pixels, int w, int h, int x, int y, int color) {

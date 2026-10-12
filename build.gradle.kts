@@ -17,6 +17,10 @@ val requiredJava: JavaVersion = when {
 // Armor rendering was rewritten in 1.21.2 (EquipmentLayerRenderer), so each side gets its own mixin.
 val clientMixins: List<String> = buildList {
     add("MinecraftMixin")
+    // Keep servers from detecting the mod through sign translation probing
+    add("ClientPacketListenerMixin")
+    add("TranslatableContentsMixin")
+    add("KeyMappingMixin")
     if (mc >= "1.21.2") add("EquipmentLayerRendererMixin") else add("HumanoidArmorLayerMixin")
 }
 
@@ -30,6 +34,18 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
     // The whole Fabric API: the mod depends on "fabric-api", and the client game tests need several of its modules
     modImplementation("net.fabricmc.fabric-api:fabric-api:${sc.properties.get<String>("deps.fabric_api")}")
+    // Fabric API as published (production names) for the production-like test run below
+    "productionRuntimeMods"("net.fabricmc.fabric-api:fabric-api:${sc.properties.get<String>("deps.fabric_api")}")
+}
+
+// CI: start a production-like client with only the universal jar (-PuniversalJar=<path>) and check that
+// Fabric Loader picks the right nested jar: the game must load and pass the self check, then it quits.
+providers.gradleProperty("universalJar").orNull?.let { universalJar ->
+    tasks.register<net.fabricmc.loom.task.prod.ClientProductionRunTask>("runUniversalJar") {
+        mods.setFrom(file(universalJar), configurations.named("productionRuntimeMods"))
+        jvmArgs.add("-Ddurabilitytweaks.smokeTest=true")
+        runDir = layout.buildDirectory.dir("run-universal")
+    }
 }
 
 if (hasClientGameTests) {
@@ -80,7 +96,8 @@ tasks {
         val props = mapOf(
             "id" to sc.properties.get<String>("mod.id"),
             "name" to sc.properties.get<String>("mod.name"),
-            "version" to sc.properties.get<String>("mod.version"),
+            // Unique per Minecraft version (1.0.0+1.21.11), so Fabric can tell the jars apart inside the universal jar
+            "version" to project.version.toString(),
             "minecraft" to sc.properties.get<String>("mod.mc_compat"),
             "java" to requiredJava.majorVersion,
             "loader" to Regex("\\d+\\.\\d+").find(sc.properties.get<String>("deps.fabric_loader"))!!.value,

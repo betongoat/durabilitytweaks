@@ -9,7 +9,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.screens.TitleScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //? if >=26.1 {
@@ -27,6 +26,11 @@ public final class DurabilityTweaks implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     private static KeyMapping openSettings;
+    private static boolean smokeTestDone;
+
+    public static KeyMapping openSettingsKey() {
+        return openSettings;
+    }
 
     @Override
     public void onInitializeClient() {
@@ -46,9 +50,11 @@ public final class DurabilityTweaks implements ClientModInitializer {
 
         boolean smokeTest = Boolean.getBoolean("durabilitytweaks.smokeTest");
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (smokeTest && Screens.current(client) instanceof TitleScreen) {
-                // CI check: the game started with all mixins applied
-                LOGGER.info("Smoke test passed: reached the title screen");
+            if (smokeTest && !smokeTestDone && !Screens.overlayActive(client) && Screens.current(client) != null) {
+                // CI check: the game finished loading with all mixins applied
+                smokeTestDone = true;
+                SelfCheck.run();
+                LOGGER.info("Smoke test passed: the game finished loading");
                 client.stop();
             }
             ArmorTextureManager.tick();
