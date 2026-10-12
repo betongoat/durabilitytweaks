@@ -49,6 +49,17 @@ jobs:
             ./gradlew ":${{ matrix.version }}:runClientGameTest" --stacktrace
           fi
 
+      - name: Print screenshots to the log
+        if: always() && matrix.version == '1.21.11'
+        run: |
+          pip install --quiet pillow
+          python3 .github/scripts/print_screenshots.py \
+            durabilitytweaks_player_netherite_45_full_number \
+            durabilitytweaks_player_netherite_45_outline_number \
+            durabilitytweaks_player_diamond_8_full_number \
+            durabilitytweaks_netherite_full \
+            durabilitytweaks_settings
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:

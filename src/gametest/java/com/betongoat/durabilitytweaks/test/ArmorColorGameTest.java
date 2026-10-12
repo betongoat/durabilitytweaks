@@ -4,6 +4,7 @@ import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.NumberMode;
 import com.betongoat.durabilitytweaks.gui.DurabilityConfigScreen;
+import net.minecraft.client.CameraType;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -42,6 +43,24 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             context.waitTicks(20);
             screenshots(context, "diamond");
 
+            // The same armor on a player, seen from the front
+            world.getServer().runCommand("kill @e[type=minecraft:armor_stand]");
+            world.getServer().runCommand("tp @a 0.5 " + y + " 0.5 0 0");
+            context.runOnClient(client -> client.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            equipPlayer(world, "netherite", NETHERITE_MAX, 45);
+            waitForChunks(context);
+            style(context, ColorStyle.FULL, NumberMode.OFF);
+            context.takeScreenshot("durabilitytweaks_player_netherite_45_full");
+            style(context, ColorStyle.FULL, NumberMode.HELMET_AND_CHESTPLATE);
+            context.takeScreenshot("durabilitytweaks_player_netherite_45_full_number");
+            style(context, ColorStyle.OUTLINE, NumberMode.HELMET);
+            context.takeScreenshot("durabilitytweaks_player_netherite_45_outline_number");
+            equipPlayer(world, "diamond", DIAMOND_MAX, 8);
+            context.waitTicks(10);
+            style(context, ColorStyle.FULL, NumberMode.HELMET);
+            context.takeScreenshot("durabilitytweaks_player_diamond_8_full_number");
+            context.runOnClient(client -> client.options.setCameraType(CameraType.FIRST_PERSON));
+
             DurabilityConfig.reset();
         }
     }
@@ -66,6 +85,14 @@ public class ArmorColorGameTest implements FabricClientGameTest {
                 world.getServer().runCommand("item replace entity @e[tag=" + tag + ",limit=1] armor." + SLOTS[slot]
                     + " with minecraft:" + material + "_" + PIECES[slot] + "[damage=" + damage + "]");
             }
+        }
+    }
+
+    private static void equipPlayer(TestSingleplayerContext world, String material, int[] maxDamage, int percent) {
+        for (int slot = 0; slot < SLOTS.length; slot++) {
+            int damage = (int) Math.round(maxDamage[slot] * (100 - percent) / 100.0);
+            world.getServer().runCommand("item replace entity @a armor." + SLOTS[slot]
+                + " with minecraft:" + material + "_" + PIECES[slot] + "[damage=" + damage + "]");
         }
     }
 
