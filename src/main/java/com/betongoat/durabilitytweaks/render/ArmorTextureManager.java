@@ -4,6 +4,7 @@ import com.betongoat.durabilitytweaks.DurabilityTweaks;
 import com.betongoat.durabilitytweaks.config.ArmorFilter;
 import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
+import com.betongoat.durabilitytweaks.config.IconMode;
 import com.betongoat.durabilitytweaks.config.NumberFormat;
 import com.betongoat.durabilitytweaks.config.NumberMode;
 import com.betongoat.durabilitytweaks.core.ArmorLayout;
@@ -35,6 +36,8 @@ public final class ArmorTextureManager {
     /** Decoded source textures; null value means the texture could not be loaded. */
     private static final Map<Identifier, Source> SOURCES = new HashMap<>();
     private static int nextId;
+    /** Set while the settings screen draws an icon that has to look vanilla (preview of inventories in HUD mode). */
+    public static boolean vanillaIcons;
 
     /** A texture as drawn: its location and pixel size. */
     public record Resolved(Identifier id, int width, int height) {
@@ -68,8 +71,12 @@ public final class ArmorTextureManager {
      * @param own whether the local player wears it
      */
     public static DurabilityInfo infoFor(ItemStack stack, boolean own) {
+        return infoFor(stack, own, true);
+    }
+
+    private static DurabilityInfo infoFor(ItemStack stack, boolean own, boolean checkOwner) {
         DurabilityConfig config = DurabilityConfig.get();
-        if (!config.enabled || !config.owners.includes(own)) {
+        if (!config.enabled || (checkOwner && !config.owners.includes(own))) {
             return null;
         }
         DurabilityInfo info = durabilityOf(stack);
@@ -121,14 +128,14 @@ public final class ArmorTextureManager {
      */
     public static Resolved resolve(Identifier original, ArmorLayout.Kind kind, DurabilityInfo info) {
         DurabilityConfig config = DurabilityConfig.get();
-        return resolve(original, kind, info, config.style, config.numberMode);
+        return resolve(original, kind, info, config.style, config.numberMode());
     }
 
     /** Like {@link #resolve(Identifier, ArmorLayout.Kind, DurabilityInfo)} with the style and number placement overridden (settings screen previews). */
     public static Resolved resolve(Identifier original, ArmorLayout.Kind kind, DurabilityInfo info, ColorStyle style, NumberMode numberMode) {
         TextureProcessor.Request request = request(info, kind, style, numberMode);
         if (request == null) {
-            Source source = source(original);
+            Source source = source(original, true);
             return source == null ? null : new Resolved(original, source.width(), source.height());
         }
         String key = original + "|" + request;
@@ -148,31 +155,94 @@ public final class ArmorTextureManager {
     private static TextureProcessor.Request request(DurabilityInfo info, ArmorLayout.Kind kind, ColorStyle colorStyle, NumberMode numberMode) {
         DurabilityConfig config = DurabilityConfig.get();
         boolean full = info.isFull();
-        // Undamaged armor looks vanilla, unless the player wants to see "100" on it
-        if (full && !(config.showAtFull && numberMode.onHelmet())) {
+        // Undamaged armor looks vanilla, unless the player wants to see the number on it too
+        if (full && !(config.showAtFull && numberMode.any())) {
             return null;
         }
         ColorStyle style = full ? ColorStyle.NONE : colorStyle;
-        int color = full ? 0xFFFFFFFF : config.palette.palette.color(info.tier().paletteSlot(info.band()));
+        int color = colorOf(info);
 
         String text = null;
         boolean head = false;
         boolean chest = false;
-        if (kind == ArmorLayout.Kind.OUTER && numberMode.onHelmet()) {
+        if (kind == ArmorLayout.Kind.OUTER && numberMode.any()) {
             text = String.valueOf(config.numberFormat == NumberFormat.POINTS ? info.remaining() : info.percentDisplay());
-            head = true;
+            head = numberMode.onHelmet();
             chest = numberMode.onChestplate();
         }
-        TextureProcessor.Request request = new TextureProcessor.Request(style, color, config.outlineWidth.texels, text, head, chest);
+        TextureProcessor.Request request = new TextureProcessor.Request(style, color, config.outlineWidth.texels, text, head, chest,
+            config.numberSize.faceShare, numberColor(style, color));
         return request.isNoop() ? null : request;
     }
 
+    /** Durability colour of the armor's current level, white for undamaged armor. */
+    public static int colorOf(DurabilityInfo info) {
+        return info.isFull() ? 0xFFFFFFFF : DurabilityConfig.get().activePalette().color(info.tier().paletteSlot(info.band()));
+    }
+
+    private static int numberColor(ColorStyle style, int durabilityColor) {
+        return switch (DurabilityConfig.get().numberColor) {
+            case AUTO -> style == ColorStyle.FULL ? TextureProcessor.TEXT_LIGHT : durabilityColor;
+            case DURABILITY -> durabilityColor;
+            default -> DurabilityConfig.get().numberColor.argb;
+        };
+    }
+
+    /** Whether an item counts as humanoid armor (helmet, chestplate, leggings, boots). */
+    public static boolean isArmor(ItemStack stack) {
+        if (BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath().contains("elytra")) {
+            return false;
+        }
+        //? if >=1.21.2 {
+        net.minecraft.world.item.equipment.Equippable equippable = stack.get(net.minecraft.core.component.DataComponents.EQUIPPABLE);
+        return equippable != null && equippable.slot().getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR;
+        //?} else {
+        /*return stack.getItem() instanceof net.minecraft.world.item.ArmorItem;
+        *///?}
+    }
+
+    /**
+     * Recoloured icon for an armor item in a GUI (HUD, armor HUD mods, inventories), or null when the
+     * icon should stay vanilla. {@code onHud} tells whether it is drawn outside of any screen.
+     */
+    public static Resolved icon(ItemStack stack, boolean onHud) {
+        DurabilityConfig config = DurabilityConfig.get();
+        if (vanillaIcons || !config.enabled || config.style == ColorStyle.NONE || config.iconMode == IconMode.OFF
+            || (config.iconMode == IconMode.HUD && !onHud) || !isArmor(stack)) {
+            return null;
+        }
+        DurabilityInfo info = infoFor(stack, true, false);
+        if (info == null || info.isFull()) {
+            return null;
+        }
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier texture = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "textures/item/" + itemId.getPath() + ".png");
+        int color = colorOf(info);
+        String key = "icon|" + texture + "|" + config.style + "|" + color + "|" + config.outlineWidth;
+        Generated generated = GENERATED.get(key);
+        if (generated == null) {
+            Source source = source(texture, false);
+            if (source == null) {
+                return null;
+            }
+            TextureProcessor.Image image = TextureProcessor.processIcon(source.argb(), source.width(), source.height(),
+                config.style, color, config.outlineWidth.texels);
+            generated = new Generated(upload(image));
+            GENERATED.put(key, generated);
+        }
+        generated.lastUsed = System.nanoTime();
+        return generated.texture;
+    }
+
     private static Resolved generate(Identifier original, TextureProcessor.Request request) {
-        Source source = source(original);
+        Source source = source(original, true);
         if (source == null) {
             return null;
         }
-        TextureProcessor.Image image = TextureProcessor.process(source.argb(), source.width(), source.height(), request);
+        return upload(TextureProcessor.process(source.argb(), source.width(), source.height(), request));
+    }
+
+    private static Resolved upload(TextureProcessor.Image image) {
         NativeImage nativeImage = new NativeImage(image.width(), image.height(), false);
         int[] pixels = image.argb();
         for (int y = 0; y < image.height(); y++) {
@@ -181,7 +251,7 @@ public final class ArmorTextureManager {
             }
         }
 
-        Identifier id = Identifier.fromNamespaceAndPath(DurabilityTweaks.MOD_ID, "armor/" + nextId++);
+        Identifier id = Identifier.fromNamespaceAndPath(DurabilityTweaks.MOD_ID, "generated/" + nextId++);
         //? if >=1.21.5 {
         DynamicTexture texture = new DynamicTexture(id::toString, nativeImage);
         //?} else {
@@ -191,7 +261,8 @@ public final class ArmorTextureManager {
         return new Resolved(id, image.width(), image.height());
     }
 
-    private static Source source(Identifier location) {
+    /** @param armorLayout whether this is an armor texture (only the standard 2:1 layout can be processed) */
+    private static Source source(Identifier location, boolean armorLayout) {
         if (SOURCES.containsKey(location)) {
             return SOURCES.get(location);
         }
@@ -202,7 +273,8 @@ public final class ArmorTextureManager {
                 int width = image.getWidth();
                 int height = image.getHeight();
                 // Only the standard 2:1 armor layout (64x32, 128x64, ...) can be processed safely
-                if (width >= ArmorLayout.TEXELS_WIDE && width == height * 2) {
+                boolean supported = armorLayout ? width >= ArmorLayout.TEXELS_WIDE && width == height * 2 : width > 0 && width == height;
+                if (supported) {
                     int[] argb = new int[width * height];
                     for (int y = 0; y < height; y++) {
                         for (int x = 0; x < width; x++) {
@@ -211,10 +283,10 @@ public final class ArmorTextureManager {
                     }
                     source = new Source(argb, width, height);
                 } else {
-                    DurabilityTweaks.LOGGER.warn("Skipping armor texture {} with unsupported size {}x{}", location, width, height);
+                    DurabilityTweaks.LOGGER.warn("Skipping texture {} with unsupported size {}x{}", location, width, height);
                 }
             } catch (Exception e) {
-                DurabilityTweaks.LOGGER.warn("Could not read armor texture {}", location, e);
+                DurabilityTweaks.LOGGER.warn("Could not read texture {}", location, e);
             }
         }
         SOURCES.put(location, source);

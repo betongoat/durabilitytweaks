@@ -1,17 +1,39 @@
 package com.betongoat.durabilitytweaks.config;
 
-/** Where the durability number is painted onto the armor. */
+/** Which armor pieces show the durability number (derived from the two settings toggles). */
 public enum NumberMode implements OptionEnum {
-    OFF,
-    HELMET,
-    HELMET_AND_CHESTPLATE;
+    OFF(false, false),
+    HELMET(true, false),
+    CHESTPLATE(false, true),
+    HELMET_AND_CHESTPLATE(true, true);
+
+    private final boolean helmet;
+    private final boolean chestplate;
+
+    NumberMode(boolean helmet, boolean chestplate) {
+        this.helmet = helmet;
+        this.chestplate = chestplate;
+    }
+
+    public static NumberMode of(boolean helmet, boolean chestplate) {
+        for (NumberMode mode : values()) {
+            if (mode.helmet == helmet && mode.chestplate == chestplate) {
+                return mode;
+            }
+        }
+        return OFF;
+    }
 
     public boolean onHelmet() {
-        return this != OFF;
+        return helmet;
     }
 
     public boolean onChestplate() {
-        return this == HELMET_AND_CHESTPLATE;
+        return chestplate;
+    }
+
+    public boolean any() {
+        return helmet || chestplate;
     }
 
     @Override

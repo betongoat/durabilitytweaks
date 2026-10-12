@@ -48,7 +48,7 @@ public final class ArmorInspector {
                 } else {
                     known++;
                     int rgb = info.isFull() ? 0xFFFFFF
-                        : DurabilityConfig.get().palette.palette.color(info.tier().paletteSlot(info.band())) & 0xFFFFFF;
+                        : DurabilityConfig.get().activePalette().color(info.tier().paletteSlot(info.band())) & 0xFFFFFF;
                     if (info.isFull()) {
                         full++;
                     }

@@ -21,6 +21,8 @@ val clientMixins: List<String> = buildList {
     add("ClientPacketListenerMixin")
     add("TranslatableContentsMixin")
     add("KeyMappingMixin")
+    // Durability colour on armor icons (hotbar, armor HUD mods, optionally inventories)
+    add("GuiItemMixin")
     if (mc >= "1.21.2") {
         add("EquipmentLayerRendererMixin")
         add("EntityRendererMixin")

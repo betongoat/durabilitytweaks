@@ -1,5 +1,6 @@
 package com.betongoat.durabilitytweaks.config;
 
+import com.betongoat.durabilitytweaks.core.Palette;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -20,17 +21,52 @@ public final class DurabilityConfig {
     public boolean enabled = true;
     public ColorStyle style = ColorStyle.FULL;
     public PaletteType palette = PaletteType.CLASSIC;
+    /** Colours of {@link PaletteType#CUSTOM}, one RGB value per durability level (see {@link Palette}). */
+    public int[] customColors = Palette.CLASSIC.colors();
     public OutlineWidth outlineWidth = OutlineWidth.THIN;
-    public NumberMode numberMode = NumberMode.OFF;
+    public boolean numberOnHelmet = true;
+    public boolean numberOnChestplate = true;
     public NumberFormat numberFormat = NumberFormat.POINTS;
+    public NumberSize numberSize = NumberSize.MEDIUM;
+    public NumberColor numberColor = NumberColor.AUTO;
     /** Paint the number even on undamaged armor (full armor otherwise looks vanilla). */
     public boolean showAtFull = false;
+    public IconMode iconMode = IconMode.HUD;
     public ArmorFilter armorFilter = ArmorFilter.ALL;
     public ArmorOwners owners = ArmorOwners.EVERYONE;
-    /** Settings file format; files without it come from 1.0.x. */
+    /** Settings file format: missing in 1.0.x, 2 in 1.1.x. */
     public int configVersion = CURRENT_VERSION;
 
-    private static final int CURRENT_VERSION = 2;
+    private static final int CURRENT_VERSION = 3;
+
+    private transient Palette customPalette;
+    private transient int[] customPaletteSource;
+
+    public NumberMode numberMode() {
+        return NumberMode.of(numberOnHelmet, numberOnChestplate);
+    }
+
+    public void setNumberMode(NumberMode mode) {
+        numberOnHelmet = mode.onHelmet();
+        numberOnChestplate = mode.onChestplate();
+    }
+
+    /** The palette in use, including the player's own colours. */
+    public Palette activePalette() {
+        if (palette != PaletteType.CUSTOM) {
+            return palette.palette;
+        }
+        if (customPalette == null || customPaletteSource != customColors) {
+            customPalette = Palette.of(customColors);
+            customPaletteSource = customColors;
+        }
+        return customPalette;
+    }
+
+    /** Call after editing {@link #customColors} in place. */
+    public void customColorsChanged() {
+        customPalette = null;
+    }
 
     private static DurabilityConfig instance = new DurabilityConfig();
     private static Path file;
@@ -46,9 +82,16 @@ public final class DurabilityConfig {
                 JsonObject json = GSON.fromJson(reader, JsonObject.class);
                 if (json != null) {
                     DurabilityConfig loaded = GSON.fromJson(json, DurabilityConfig.class);
-                    if (!json.has("configVersion")) {
+                    int version = json.has("configVersion") ? json.get("configVersion").getAsInt() : 1;
+                    if (version < 2) {
                         // 1.0.x saved percent as the default; the number now shows durability points left
                         loaded.numberFormat = NumberFormat.POINTS;
+                    }
+                    if (version < 3) {
+                        // 1.1.x had one "numberMode" setting that defaulted to off; numbers are on by default now
+                        String old = json.has("numberMode") ? json.get("numberMode").getAsString() : "OFF";
+                        loaded.numberOnHelmet = true;
+                        loaded.numberOnChestplate = !old.equals("HELMET");
                     }
                     loaded.configVersion = CURRENT_VERSION;
                     instance = loaded.sanitized();
@@ -85,7 +128,10 @@ public final class DurabilityConfig {
         if (style == null) style = defaults.style;
         if (palette == null) palette = defaults.palette;
         if (outlineWidth == null) outlineWidth = defaults.outlineWidth;
-        if (numberMode == null) numberMode = defaults.numberMode;
+        if (numberSize == null) numberSize = defaults.numberSize;
+        if (numberColor == null) numberColor = defaults.numberColor;
+        if (iconMode == null) iconMode = defaults.iconMode;
+        if (customColors == null || customColors.length != Palette.SLOTS) customColors = defaults.customColors;
         if (numberFormat == null) numberFormat = defaults.numberFormat;
         if (armorFilter == null) armorFilter = defaults.armorFilter;
         if (owners == null) owners = defaults.owners;

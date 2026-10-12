@@ -4,6 +4,7 @@ import com.betongoat.durabilitytweaks.SelfCheck;
 import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.NumberMode;
+import com.betongoat.durabilitytweaks.gui.ColorEditorScreen;
 import com.betongoat.durabilitytweaks.gui.DurabilityConfigScreen;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -12,7 +13,7 @@ import net.minecraft.client.Minecraft;
 
 /**
  * Starts the real game, checks the mod works, and shoots the gallery: rows of armor stands in
- * every style on a quartz platform, a player close-up and the settings screen, all at 1920x1080.
+ * every style on a quartz platform, a player close-up, the HUD and the settings screens, all at 1920x1080.
  * Run with {@code ./gradlew :<version>:runClientGameTest}; images land in the run's screenshots folder.
  */
 public class ArmorColorGameTest implements FabricClientGameTest {
@@ -35,7 +36,7 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             waitForWorld(context);
             // Full HD only after the world loaded: software rendering on CI is too slow to load a world at 1080p
             context.getInput().resizeWindow(1920, 1080);
-            context.runOnClient(ArmorColorGameTest::hideHud);
+            context.runOnClient(client -> setHudHidden(client, true));
 
             int y = context.computeOnClient(client -> (int) Math.floor(client.player.getY()));
             command(world, "time set noon");
@@ -71,21 +72,39 @@ public class ArmorColorGameTest implements FabricClientGameTest {
 
             // Settings screen over the world
             style(context, ColorStyle.FULL, NumberMode.OFF);
-            context.setScreen(() -> new DurabilityConfigScreen(null));
+            context.setScreen(() -> new DurabilityConfigScreen(null, 0));
             context.waitTicks(10);
             context.takeScreenshot("gallery_8_settings");
+            context.setScreen(() -> null);
+
+            // Damaged armor in the hotbar: icons take the durability colour too
+            DurabilityConfig.reset();
+            int[] hotbarPercents = {70, 45, 25, 8};
+            for (int slot = 0; slot < SLOTS.length; slot++) {
+                command(world, "item replace entity @p hotbar." + (slot + 2) + " with minecraft:netherite_" + PIECES[slot]
+                    + "[damage=" + damage(NETHERITE_MAX[slot], hotbarPercents[slot]) + "]");
+            }
+            context.runOnClient(client -> setHudHidden(client, false));
+            context.waitTicks(10);
+            context.takeScreenshot("gallery_9_hud_icons");
+            context.runOnClient(client -> setHudHidden(client, true));
+
+            // Own colours in the palette editor
+            context.setScreen(() -> new ColorEditorScreen(new DurabilityConfigScreen(null, 0)));
+            context.waitTicks(10);
+            context.takeScreenshot("gallery_10_custom_colors");
             context.setScreen(() -> null);
             DurabilityConfig.reset();
         }
     }
 
-    private static void hideHud(Minecraft client) {
+    private static void setHudHidden(Minecraft client, boolean hidden) {
         //? if >=26.2 {
-        if (!client.gui.hud.isHidden()) {
+        if (client.gui.hud.isHidden() != hidden) {
             client.gui.hud.toggle();
         }
         //?} else {
-        /*client.options.hideGui = true;
+        /*client.options.hideGui = hidden;
         *///?}
     }
 
@@ -144,7 +163,7 @@ public class ArmorColorGameTest implements FabricClientGameTest {
     private static void style(ClientGameTestContext context, ColorStyle style, NumberMode numberMode) {
         context.runOnClient(client -> {
             DurabilityConfig.get().style = style;
-            DurabilityConfig.get().numberMode = numberMode;
+            DurabilityConfig.get().setNumberMode(numberMode);
         });
         context.waitTicks(3);
     }

@@ -12,24 +12,24 @@ public final class TextureProcessor {
     /** ...and to this width when a number is painted, so the digits look crisp. */
     private static final int TEXT_WIDTH = 640;
     /** Light grey like Minecraft's own text. */
-    private static final int TEXT_LIGHT = 0xFFE8E8E8;
+    public static final int TEXT_LIGHT = 0xFFE8E8E8;
+    /** Item icons are upscaled to this width so outlines can be thinner than an icon pixel. */
+    private static final int ICON_WIDTH = 64;
 
     /**
-     * @param style        how the armor itself is coloured
-     * @param color        durability colour (opaque ARGB)
+     * @param style         how the armor itself is coloured
+     * @param color         durability colour (opaque ARGB)
      * @param outlineTexels border width for {@link ColorStyle#OUTLINE}, in armor texels
-     * @param text         number to paint, or null
-     * @param textOnHead   paint the number on the helmet's forehead
-     * @param textOnChest  paint the number on the chestplate
+     * @param text          number to paint, or null
+     * @param textOnHead    paint the number on the helmet's forehead
+     * @param textOnChest   paint the number on the chestplate
+     * @param textShare     width of a three digit number as a share of the face it is painted on
+     * @param textColor     colour of the digits (opaque ARGB)
      */
-    public record Request(ColorStyle style, int color, double outlineTexels, String text, boolean textOnHead, boolean textOnChest) {
+    public record Request(ColorStyle style, int color, double outlineTexels, String text, boolean textOnHead, boolean textOnChest,
+                          double textShare, int textColor) {
         public boolean hasText() {
             return text != null && (textOnHead || textOnChest);
-        }
-
-        /** Number colour: light grey on fully coloured armor, the durability colour otherwise. */
-        public int textColor() {
-            return style == ColorStyle.FULL ? TEXT_LIGHT : color;
         }
 
         /** Whether this request changes the texture at all. */
@@ -57,13 +57,53 @@ public final class TextureProcessor {
 
         if (request.hasText()) {
             if (request.textOnHead()) {
-                drawNumber(out, w, h, scaled(ArmorLayout.HEAD.front(), texel), request.text(), request.textColor(), true);
+                drawNumber(out, w, h, scaled(ArmorLayout.HEAD.front(), texel), request.text(), request.textColor(), request.textShare(), true);
             }
             if (request.textOnChest()) {
-                drawNumber(out, w, h, scaled(ArmorLayout.BODY.front(), texel), request.text(), request.textColor(), false);
+                drawNumber(out, w, h, scaled(ArmorLayout.BODY.front(), texel), request.text(), request.textColor(), request.textShare(), false);
             }
         }
         return new Image(out, w, h);
+    }
+
+    /**
+     * Colours an item icon (e.g. a 16x16 chestplate): {@link ColorStyle#FULL} recolours it,
+     * {@link ColorStyle#OUTLINE} draws a border along its edge.
+     */
+    public static Image processIcon(int[] source, int width, int height, ColorStyle style, int color, double outlineTexels) {
+        int factor = style == ColorStyle.OUTLINE ? Math.max(1, ICON_WIDTH / Math.max(1, width)) : 1;
+        int w = width * factor;
+        int h = height * factor;
+        int[] out = upscale(source, width, height, factor);
+        if (style == ColorStyle.FULL) {
+            recolor(out, source, color);
+        } else if (style == ColorStyle.OUTLINE) {
+            int thickness = Math.max(1, (int) Math.round(outlineTexels * factor));
+            boolean[] opaque = new boolean[out.length];
+            for (int i = 0; i < out.length; i++) {
+                opaque[i] = alpha(out[i]) > 0;
+            }
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    if (opaque[y * w + x] && nearTransparent(opaque, w, h, x, y, thickness)) {
+                        out[y * w + x] = color;
+                    }
+                }
+            }
+        }
+        return new Image(out, w, h);
+    }
+
+    private static boolean nearTransparent(boolean[] opaque, int w, int h, int x, int y, int t) {
+        for (int dy = -t; dy <= t; dy++) {
+            for (int dx = -t; dx <= t; dx++) {
+                int nx = x + dx, ny = y + dy;
+                if (nx < 0 || ny < 0 || nx >= w || ny >= h || !opaque[ny * w + nx]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static int[] upscale(int[] source, int width, int height, int factor) {
@@ -161,10 +201,10 @@ public final class TextureProcessor {
      *
      * @param top place it on the helmet's forehead instead of the upper chest
      */
-    private static void drawNumber(int[] pixels, int w, int h, int[] face, String text, int color, boolean top) {
+    private static void drawNumber(int[] pixels, int w, int h, int[] face, String text, int color, double share, boolean top) {
         // Size every number as if it had three digits, so "7" and "100" share one font size
         int sizingWidth = Math.max(PixelFont.width(text), PixelFont.width("000"));
-        int scale = Math.max(1, (int) (face[2] * 0.66 / sizingWidth));
+        int scale = Math.max(1, (int) (face[2] * share / sizingWidth));
         int textWidth = PixelFont.width(text) * scale;
         int textHeight = PixelFont.GLYPH_HEIGHT * scale;
         int shadow = Math.max(1, scale / 2);

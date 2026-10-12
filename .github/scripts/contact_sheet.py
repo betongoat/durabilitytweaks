@@ -8,7 +8,7 @@ import sys
 from PIL import Image
 
 shots = sorted((p for p in pathlib.Path(sys.argv[1]).rglob("*gallery_*.png") if "screenshots" in p.parts),
-               key=lambda p: p.stem[p.stem.index("gallery_"):])
+               key=lambda p: int(p.stem[p.stem.index("gallery_"):].split("_")[1]))
 if not shots:
     sys.exit("no gallery screenshots found")
 thumb_w, thumb_h, columns = 480, 270, 2

@@ -31,6 +31,16 @@ public final class Palette {
 
     private final int[] rgb;
 
+    /** A palette from twelve RGB colours (alpha is ignored). */
+    public static Palette of(int[] rgb) {
+        return new Palette(rgb.clone());
+    }
+
+    /** The twelve RGB colours, a copy. */
+    public int[] colors() {
+        return rgb.clone();
+    }
+
     private Palette(int[] rgb) {
         if (rgb.length != SLOTS) {
             throw new IllegalArgumentException("A palette needs " + SLOTS + " colours");

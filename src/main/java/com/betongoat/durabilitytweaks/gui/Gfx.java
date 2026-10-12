@@ -3,6 +3,8 @@ package com.betongoat.durabilitytweaks.gui;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.ItemStack;
 
 //? if >=26.1 {
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -55,6 +57,37 @@ public final class Gfx {
         graphics.text(font, text, x, y, argb, shadow);
         //?} else {
         /*graphics.drawString(font, text, x, y, argb, shadow);
+        *///?}
+    }
+
+    public void text(Font font, FormattedCharSequence text, int x, int y, int argb, boolean shadow) {
+        //? if >=26.1 {
+        graphics.text(font, text, x, y, argb, shadow);
+        //?} else {
+        /*graphics.drawString(font, text, x, y, argb, shadow);
+        *///?}
+    }
+
+    /** An item icon at (x, y), {@code scale} times its normal 16x16 size. */
+    public void item(ItemStack stack, int x, int y, float scale) {
+        //? if >=1.21.6 {
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(scale, scale);
+        //?} else {
+        /*graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 0.0F);
+        graphics.pose().scale(scale, scale, 1.0F);
+        *///?}
+        //? if >=26.1 {
+        graphics.item(stack, 0, 0);
+        //?} else {
+        /*graphics.renderItem(stack, 0, 0);
+        *///?}
+        //? if >=1.21.6 {
+        graphics.pose().popMatrix();
+        //?} else {
+        /*graphics.pose().popPose();
         *///?}
     }
 

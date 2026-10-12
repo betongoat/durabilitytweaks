@@ -24,7 +24,11 @@ CAPTIONS = {
     "gallery_7_player_numbers": ("Colours and numbers together",
                                  "Exact durability on the helmet and the chestplate"),
     "gallery_8_settings": ("Simple settings",
-                           "Live preview, 15 languages, Mod Menu support"),
+                           "Live preview, every option explained, 15 languages, Mod Menu support"),
+    "gallery_9_hud_icons": ("Coloured armor icons",
+                            "Hotbar and armor HUD mods show the durability colour too"),
+    "gallery_10_custom_colors": ("Your own colours",
+                                 "Pick any colour for every durability level"),
 }
 GLOW = [(31, 214, 42), (255, 210, 31), (224, 30, 30), (155, 43, 232), (46, 91, 255)]
 
@@ -99,7 +103,7 @@ def main():
     source, output = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
     output.mkdir(parents=True, exist_ok=True)
     # Only raw game screenshots, never already framed images (e.g. docs/gallery)
-    shots = sorted((p for p in source.rglob("*gallery_*.png") if "screenshots" in p.parts), key=gallery_name)
+    shots = sorted((p for p in source.rglob("*gallery_*.png") if "screenshots" in p.parts), key=lambda p: int(gallery_name(p).split("_")[1]))
     for index, shot in enumerate(shots):
         frame(shot, output / f"{gallery_name(shot)}.png", index)
         print(f"framed {shot.name}")

@@ -15,10 +15,11 @@ Zrzuty ekranu z gry robione automatycznie przez CI (Minecraft 26.2, 1920×1080):
 | ![Diament](docs/gallery/gallery_3_diamond_full.png) | ![Obramówka](docs/gallery/gallery_4_diamond_outline.png) |
 | ![Sama liczba](docs/gallery/gallery_5_diamond_number_only.png) | ![Gracz](docs/gallery/gallery_6_player.png) |
 | ![Gracz z liczbami](docs/gallery/gallery_7_player_numbers.png) | ![Ustawienia](docs/gallery/gallery_8_settings.png) |
+| ![Ikony na HUD](docs/gallery/gallery_9_hud_icons.png) | ![Własne kolory](docs/gallery/gallery_10_custom_colors.png) |
 
 ## Wersje
 
-**Jeden plik `durabilitytweaks-1.1.1.jar` działa na wszystkich wersjach 1.21 – 26.3**
+**Jeden plik `durabilitytweaks-1.2.0.jar` działa na wszystkich wersjach 1.21 – 26.3**
 ([pobierz z Releases](https://github.com/betongoat/durabilitytweaks/releases/latest)). W środku są wersje
 dla poszczególnych grup wydań Minecrafta, a Fabric Loader sam ładuje tę pasującą do gry:
 
@@ -63,17 +64,31 @@ od 10% kolor zmienia się co 5%.
 ## Ustawienia (GUI)
 
 Otwierane klawiszem **K** (do zmiany w Sterowaniu) albo przyciskiem w Mod Menu.
-Domyślnie: pełne kolory, bez liczby. Po lewej opcje w trzech zakładkach, po prawej podgląd na żywo
-zbroi netherytowej i diamentowej z suwakiem wytrzymałości oraz skala kolorów
+Domyślnie: cała zbroja w kolorze, liczba na hełmie i napierśniku, liczba pokazuje punkty wytrzymałości
+(nie procenty), kolorowe ikony zbroi na HUD.
+
+Po lewej opcje w czterech zakładkach, a pod nimi ramka, która opisuje opcję pod kursorem.
+Po prawej podgląd na żywo zbroi netherytowej i diamentowej z suwakiem wytrzymałości oraz skala kolorów
 (najedź na kolor, żeby zobaczyć zakres procentów).
 
-- **Wygląd** – styl do wyboru na obrazkach: *Pełny* (cała zbroja, jak klasyczny dura pack),
+- **Kolory** – styl do wyboru na obrazkach: *Pełny* (cała zbroja, jak klasyczny dura pack),
   *Obramówka* (zbroja wygląda normalnie, kolorowe są tylko krawędzie), *Brak*;
-  kolory (klasyczne, zielony → czerwony, dla daltonistów); grubość obramówki.
-- **Liczba** – brak / na hełmie / na hełmie i napierśniku; ile punktów wytrzymałości zostało (domyślnie)
-  albo procenty; czy pokazywać na pełnej zbroi.
+  paleta (klasyczna, zielony → czerwony, dla daltonistów albo **własna** – przycisk ✎ otwiera edytor,
+  w którym każdemu z 12 poziomów wytrzymałości ustawisz dowolny kolor suwakami RGB, kodem hex albo gotowym kolorem);
+  grubość obramówki.
+- **Liczba** – gdzie: brak / hełm / napierśnik / oba; co pokazuje: punkty (domyślnie) albo procenty;
+  rozmiar (mała / średnia / duża); kolor (auto, biały, kolor wytrzymałości, czarny, żółty);
+  czy pokazywać na pełnej zbroi.
+- **Ikony** – kolorowe ikony zbroi: wyłączone / na HUD (pasek i mody z armor HUD, domyślnie) /
+  wszędzie (też ekwipunek), z podglądem.
 - **Ogólne** – włącz/wyłącz, które zbroje (wszystkie albo diament i netheryt), czyja zbroja
   (wszyscy / tylko moja / tylko inni), reset.
+
+Liczby są tylko na hełmie i napierśniku: obie nogi spodni i butów używają tego samego, lustrzanie odbitego
+fragmentu tekstury, więc liczba na jednej nodze zawsze byłaby odwrócona, a górę spodni zasłania napierśnik.
+
+**Armor HUD:** mod koloruje ikonę zbroi w miejscu, przez które Minecraft rysuje każdą ikonę przedmiotu,
+więc działa z modami pokazującymi zbroję na ekranie (armor HUD) bez dodatkowej konfiguracji.
 
 Klawisz **J** wypisuje na twoim czacie (tylko u ciebie) pozostałą wytrzymałość zbroi gracza lub moba pod
 celownikiem, np. `400/592`. Jeśli u innego gracza cała zbroja jest pełna, mimo że dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych

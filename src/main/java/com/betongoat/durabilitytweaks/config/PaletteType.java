@@ -8,8 +8,11 @@ public enum PaletteType implements OptionEnum {
     /** Smooth green to red gradient, ending in dark crimson. */
     GRADIENT(Palette.GRADIENT),
     /** Viridis-like palette that stays readable for colour blind players. */
-    COLORBLIND(Palette.COLORBLIND);
+    COLORBLIND(Palette.COLORBLIND),
+    /** The player's own colours ({@link DurabilityConfig#customColors}). */
+    CUSTOM(null);
 
+    /** Fixed colours, null for {@link #CUSTOM}. */
     public final Palette palette;
 
     PaletteType(Palette palette) {
