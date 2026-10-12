@@ -63,8 +63,13 @@ def rounded(image, radius):
     return mask
 
 
+def gallery_name(path):
+    """Fabric's game test prefixes screenshots with a counter (0007_gallery_...); drop it."""
+    return path.stem[path.stem.index("gallery_"):]
+
+
 def frame(shot_path, out_path, index):
-    title, subtitle = CAPTIONS.get(shot_path.stem, (shot_path.stem, ""))
+    title, subtitle = CAPTIONS.get(gallery_name(shot_path), (gallery_name(shot_path), ""))
     canvas = background(index).convert("RGBA")
     shot = Image.open(shot_path).convert("RGBA")
     shot_width = 1560
@@ -93,9 +98,9 @@ def frame(shot_path, out_path, index):
 def main():
     source, output = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
     output.mkdir(parents=True, exist_ok=True)
-    shots = sorted(p for p in source.rglob("gallery_*.png"))
+    shots = sorted(source.rglob("*gallery_*.png"), key=gallery_name)
     for index, shot in enumerate(shots):
-        frame(shot, output / f"{shot.stem}.png", index)
+        frame(shot, output / f"{gallery_name(shot)}.png", index)
         print(f"framed {shot.name}")
     if not shots:
         sys.exit("no gallery screenshots found")
