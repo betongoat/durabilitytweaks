@@ -23,13 +23,15 @@ public final class TextureProcessor {
      * @param text          number to paint, or null
      * @param textOnHead    paint the number on the helmet's forehead
      * @param textOnChest   paint the number on the chestplate
+     * @param textOnLegs    paint the number on the front of the legs (both legs share that part of the texture)
+     * @param legsLow       put the leg number low, on the boots, instead of high, on the leggings
      * @param textShare     width of a three digit number as a share of the face it is painted on
      * @param textColor     colour of the digits (opaque ARGB)
      */
     public record Request(ColorStyle style, int color, double outlineTexels, String text, boolean textOnHead, boolean textOnChest,
-                          double textShare, int textColor) {
+                          boolean textOnLegs, boolean legsLow, double textShare, int textColor) {
         public boolean hasText() {
-            return text != null && (textOnHead || textOnChest);
+            return text != null && (textOnHead || textOnChest || textOnLegs);
         }
 
         /** Whether this request changes the texture at all. */
@@ -57,10 +59,16 @@ public final class TextureProcessor {
 
         if (request.hasText()) {
             if (request.textOnHead()) {
-                drawNumber(out, w, h, scaled(ArmorLayout.HEAD.front(), texel), request.text(), request.textColor(), request.textShare(), true);
+                drawNumber(out, w, h, scaled(ArmorLayout.HEAD.front(), texel), request.text(), request.textColor(), request.textShare(), -0.10);
             }
             if (request.textOnChest()) {
-                drawNumber(out, w, h, scaled(ArmorLayout.BODY.front(), texel), request.text(), request.textColor(), request.textShare(), false);
+                drawNumber(out, w, h, scaled(ArmorLayout.BODY.front(), texel), request.text(), request.textColor(), request.textShare(), 0.30);
+            }
+            if (request.textOnLegs()) {
+                // The leg is half as wide as the chest, so the number takes more of its width
+                double share = Math.min(0.96, request.textShare() * 1.45);
+                drawNumber(out, w, h, scaled(ArmorLayout.LEG.front(), texel), request.text(), request.textColor(), share,
+                    request.legsLow() ? 0.76 : 0.30);
             }
         }
         return new Image(out, w, h);
@@ -199,9 +207,10 @@ public final class TextureProcessor {
      * Paints a number centred on a face in Minecraft's text style: light digits with a soft
      * shadow that darkens the armor underneath instead of a hard outline.
      *
-     * @param top place it on the helmet's forehead instead of the upper chest
+     * @param anchor vertical centre of the number as a share of the face height; a negative value puts
+     *               the number's top edge at that (positive) share instead, like on the helmet's forehead
      */
-    private static void drawNumber(int[] pixels, int w, int h, int[] face, String text, int color, double share, boolean top) {
+    private static void drawNumber(int[] pixels, int w, int h, int[] face, String text, int color, double share, double anchor) {
         // Size every number as if it had three digits, so "7" and "100" share one font size
         int sizingWidth = Math.max(PixelFont.width(text), PixelFont.width("000"));
         int scale = Math.max(1, (int) (face[2] * share / sizingWidth));
@@ -209,9 +218,9 @@ public final class TextureProcessor {
         int textHeight = PixelFont.GLYPH_HEIGHT * scale;
         int shadow = Math.max(1, scale / 2);
         int x0 = face[0] + (face[2] - textWidth) / 2;
-        int y0 = top
-            ? face[1] + Math.round(face[3] * 0.10f)
-            : face[1] + Math.round(face[3] * 0.30f) - textHeight / 2;
+        int y0 = anchor < 0
+            ? face[1] + (int) Math.round(face[3] * -anchor)
+            : face[1] + (int) Math.round(face[3] * anchor) - textHeight / 2;
 
         for (int y = 0; y < textHeight + shadow; y++) {
             for (int x = 0; x < textWidth + shadow; x++) {

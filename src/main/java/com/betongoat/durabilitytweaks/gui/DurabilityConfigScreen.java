@@ -1,6 +1,7 @@
 package com.betongoat.durabilitytweaks.gui;
 
 import com.betongoat.durabilitytweaks.DurabilityTweaks;
+import com.betongoat.durabilitytweaks.config.ArmorPiece;
 import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.IconMode;
@@ -11,9 +12,11 @@ import com.betongoat.durabilitytweaks.core.DurabilityInfo;
 import com.betongoat.durabilitytweaks.core.DurabilityTier;
 import com.betongoat.durabilitytweaks.core.Palette;
 import com.betongoat.durabilitytweaks.render.ArmorTextureManager;
+import com.betongoat.durabilitytweaks.render.LegMirror;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -157,7 +160,7 @@ public class DurabilityConfigScreen extends Screen {
         int y = contentTop;
         labels.add(new Label(Component.translatable("durabilitytweaks.caption.style"), leftX + 8, y));
         y += 11;
-        y = addTiles(y, 2, ColorStyle.values(), () -> config.style, v -> config.style = v, "style");
+        y = addTiles(y, 2, ColorStyle.values(), v -> config.style == v, v -> config.style = v, false);
         y += 6;
         // Palette: cycle through the presets, or open the editor for your own colours
         Button palette = row(y, "palette", cycleButton(() -> config.palette, v -> config.palette = v, "palette"), 22);
@@ -181,7 +184,8 @@ public class DurabilityConfigScreen extends Screen {
         int y = contentTop;
         labels.add(new Label(Component.translatable("durabilitytweaks.caption.number"), leftX + 8, y));
         y += 11;
-        y = addTiles(y, 4, NumberMode.values(), config::numberMode, config::setNumberMode, "number");
+        // Each piece is switched on and off on its own
+        y = addTiles(y, 4, ArmorPiece.values(), piece -> config.numberMode().on(piece), config::toggleNumber, true);
         y += 6;
         List<Button> numberButtons = new ArrayList<>();
         numberButtons.add(row(y, "format", cycleButton(() -> config.numberFormat, v -> config.numberFormat = v, "format")));
@@ -231,14 +235,16 @@ public class DurabilityConfigScreen extends Screen {
         y += ROW + 4;
         labels.add(new Label(Component.translatable("durabilitytweaks.keybind_hint",
             DurabilityTweaks.openSettingsKey().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.YELLOW)), leftX + 8, y));
-        labels.add(new Label(Component.translatable("durabilitytweaks.inspect_hint",
-            DurabilityTweaks.inspectArmorKey().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.YELLOW)), leftX + 8, y + 11));
-        labels.add(new Label(Component.translatable("durabilitytweaks.client_only"), leftX + 8, y + 22));
-        contentEnd = y + 32;
+        labels.add(new Label(Component.translatable("durabilitytweaks.client_only"), leftX + 8, y + 11));
+        contentEnd = y + 21;
     }
 
-    /** A row of picture tiles for an option with few values; returns the y below it. */
-    private <E extends Enum<E> & OptionEnum> int addTiles(int y, int rowsBelow, E[] values, Supplier<E> getter, Consumer<E> setter, String option) {
+    /**
+     * A row of picture tiles for an option with few values; returns the y below it.
+     *
+     * @param toggle each tile switches on and off on its own instead of picking one of the values
+     */
+    private <E extends Enum<E> & OptionEnum> int addTiles(int y, int rowsBelow, E[] values, Predicate<E> isSelected, Consumer<E> click, boolean toggle) {
         int count = values.length;
         int tileGap = 4;
         int tileWidth = (panelWidth - 16 - tileGap * (count - 1)) / count;
@@ -252,8 +258,9 @@ public class DurabilityConfigScreen extends Screen {
             tiles.add(new Tile(x, y, tileWidth, tileHeight, thumbScale,
                 Component.translatable("durabilitytweaks.option." + value.key()),
                 Component.translatable("durabilitytweaks.option." + value.key() + ".tooltip"),
-                () -> getter.get() == value,
-                () -> setter.accept(value),
+                () -> isSelected.test(value),
+                () -> click.accept(value),
+                toggle,
                 value));
         }
         return y + tileHeight;
@@ -316,6 +323,7 @@ public class DurabilityConfigScreen extends Screen {
     public void onClose() {
         DurabilityConfig.save();
         Screens.open(this.minecraft, parent);
+        LegMirror.reloadIfNeeded(this.minecraft);
     }
 
     // ------------------------------------------------------------------ input (version specific signature)
@@ -352,7 +360,7 @@ public class DurabilityConfigScreen extends Screen {
         }
         for (Tile tile : tiles) {
             if (tile.contains(mouseX, mouseY)) {
-                if (!tile.selected.get()) {
+                if (tile.toggle || !tile.selected.get()) {
                     tile.select.run();
                     clickSound();
                     changed();
@@ -539,15 +547,23 @@ public class DurabilityConfigScreen extends Screen {
         gfx.fill(tile.x, tile.y, tile.x + tile.width, tile.y + tile.height, selected ? TILE_SELECTED : hovered ? TILE_HOVER : TILE);
         gfx.outline(tile.x, tile.y, tile.width, tile.height, selected ? ACCENT : hovered ? MUTED : PANEL_BORDER);
 
-        // Thumbnail: helmet and chestplate of netherite armor with this option applied
         DurabilityConfig config = DurabilityConfig.get();
-        ColorStyle style = tile.value instanceof ColorStyle s ? s : config.style;
-        NumberMode numberMode = tile.value instanceof NumberMode n ? n : config.numberMode();
         DurabilityInfo info = NETHERITE.info(TILE_PERCENT);
-        ArmorTextureManager.Resolved outer = ArmorTextureManager.resolve(NETHERITE.outerTexture(), ArmorLayout.Kind.OUTER, info, style, numberMode);
         int scale = tile.thumbScale;
         int thumbX = tile.x + tile.width / 2 - 8 * scale;
         int thumbY = tile.y + 5;
+        if (tile.value instanceof ArmorPiece piece) {
+            drawPiece(gfx, piece, info, thumbX, thumbY, scale);
+            if (!selected) {
+                gfx.fill(tile.x + 1, tile.y + 1, tile.x + tile.width - 1, tile.y + tile.height - 14, 0x90101318);
+            }
+            gfx.centeredText(this.font, tile.label, tile.x + tile.width / 2, tile.y + tile.height - 12, selected ? ACCENT : MUTED);
+            return;
+        }
+
+        // Thumbnail: helmet and chestplate of netherite armor in this style
+        ColorStyle style = tile.value instanceof ColorStyle s ? s : config.style;
+        ArmorTextureManager.Resolved outer = ArmorTextureManager.resolve(NETHERITE.outerTexture(), ArmorLayout.Kind.OUTER, info, style, config.numberMode());
         if (outer != null) {
             drawFace(gfx, outer, ArmorLayout.BODY, 4, 8, thumbX, thumbY, scale);
             drawFace(gfx, outer, ArmorLayout.ARM, 0, 8, thumbX, thumbY, scale);
@@ -555,6 +571,29 @@ public class DurabilityConfigScreen extends Screen {
             drawFace(gfx, outer, ArmorLayout.HEAD, 4, 0, thumbX, thumbY, scale);
         }
         gfx.centeredText(this.font, tile.label, tile.x + tile.width / 2, tile.y + tile.height - 12, selected ? ACCENT : TEXT);
+    }
+
+    /** One netherite armor piece with its number, inside a 16x20 texel box. */
+    private void drawPiece(Gfx gfx, ArmorPiece piece, DurabilityInfo info, int x, int y, int scale) {
+        boolean leggings = piece == ArmorPiece.LEGGINGS;
+        ArmorLayout.Kind kind = leggings ? ArmorLayout.Kind.LEGGINGS : ArmorLayout.Kind.OUTER;
+        ArmorTextureManager.Resolved texture = ArmorTextureManager.resolve(leggings ? NETHERITE.leggingsTexture() : NETHERITE.outerTexture(),
+            kind, info, DurabilityConfig.get().style, NumberMode.only(piece));
+        if (texture == null) {
+            return;
+        }
+        switch (piece) {
+            case HELMET -> drawFace(gfx, texture, ArmorLayout.HEAD, 4, 6, x, y, scale);
+            case CHESTPLATE -> {
+                drawFace(gfx, texture, ArmorLayout.BODY, 4, 4, x, y, scale);
+                drawFace(gfx, texture, ArmorLayout.ARM, 0, 4, x, y, scale);
+                drawFace(gfx, texture, ArmorLayout.ARM, 12, 4, x, y, scale);
+            }
+            case LEGGINGS, BOOTS -> {
+                drawFace(gfx, texture, ArmorLayout.LEG, 4, 4, x, y, scale);
+                drawFace(gfx, texture, ArmorLayout.LEG, 8, 4, x, y, scale);
+            }
+        }
     }
 
     /** Netherite and diamond armor side by side at the slider's durability. */
@@ -672,7 +711,7 @@ public class DurabilityConfigScreen extends Screen {
     }
 
     private record Tile(int x, int y, int width, int height, int thumbScale, Component label, Component tooltip,
-                        Supplier<Boolean> selected, Runnable select, Object value) {
+                        Supplier<Boolean> selected, Runnable select, boolean toggle, Object value) {
         boolean contains(double mouseX, double mouseY) {
             return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
         }

@@ -26,6 +26,8 @@ public final class DurabilityConfig {
     public OutlineWidth outlineWidth = OutlineWidth.THIN;
     public boolean numberOnHelmet = true;
     public boolean numberOnChestplate = true;
+    public boolean numberOnLeggings = false;
+    public boolean numberOnBoots = false;
     public NumberFormat numberFormat = NumberFormat.POINTS;
     public NumberSize numberSize = NumberSize.MEDIUM;
     public NumberColor numberColor = NumberColor.AUTO;
@@ -43,12 +45,23 @@ public final class DurabilityConfig {
     private transient int[] customPaletteSource;
 
     public NumberMode numberMode() {
-        return NumberMode.of(numberOnHelmet, numberOnChestplate);
+        return new NumberMode(numberOnHelmet, numberOnChestplate, numberOnLeggings, numberOnBoots);
     }
 
     public void setNumberMode(NumberMode mode) {
-        numberOnHelmet = mode.onHelmet();
-        numberOnChestplate = mode.onChestplate();
+        numberOnHelmet = mode.helmet();
+        numberOnChestplate = mode.chestplate();
+        numberOnLeggings = mode.leggings();
+        numberOnBoots = mode.boots();
+    }
+
+    public void toggleNumber(ArmorPiece piece) {
+        switch (piece) {
+            case HELMET -> numberOnHelmet = !numberOnHelmet;
+            case CHESTPLATE -> numberOnChestplate = !numberOnChestplate;
+            case LEGGINGS -> numberOnLeggings = !numberOnLeggings;
+            case BOOTS -> numberOnBoots = !numberOnBoots;
+        }
     }
 
     /** The palette in use, including the player's own colours. */

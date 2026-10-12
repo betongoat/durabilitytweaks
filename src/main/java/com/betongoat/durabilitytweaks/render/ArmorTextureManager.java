@@ -162,16 +162,17 @@ public final class ArmorTextureManager {
         ColorStyle style = full ? ColorStyle.NONE : colorStyle;
         int color = colorOf(info);
 
-        String text = null;
-        boolean head = false;
-        boolean chest = false;
-        if (kind == ArmorLayout.Kind.OUTER && numberMode.any()) {
-            text = String.valueOf(config.numberFormat == NumberFormat.POINTS ? info.remaining() : info.percentDisplay());
-            head = numberMode.onHelmet();
-            chest = numberMode.onChestplate();
-        }
+        // Every piece only draws its own part of the texture, so all enabled spots can be painted:
+        // the outer texture holds helmet, chestplate and boots, the leggings texture the leggings
+        boolean outer = kind == ArmorLayout.Kind.OUTER;
+        boolean head = outer && numberMode.helmet();
+        boolean chest = outer && numberMode.chestplate();
+        boolean legs = outer ? numberMode.boots() : numberMode.leggings();
+        String text = head || chest || legs
+            ? String.valueOf(config.numberFormat == NumberFormat.POINTS ? info.remaining() : info.percentDisplay())
+            : null;
         TextureProcessor.Request request = new TextureProcessor.Request(style, color, config.outlineWidth.texels, text, head, chest,
-            config.numberSize.faceShare, numberColor(style, color));
+            legs, outer, config.numberSize.faceShare, numberColor(style, color));
         return request.isNoop() ? null : request;
     }
 

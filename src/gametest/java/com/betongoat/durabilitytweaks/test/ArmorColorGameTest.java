@@ -6,6 +6,8 @@ import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.NumberMode;
 import com.betongoat.durabilitytweaks.gui.ColorEditorScreen;
 import com.betongoat.durabilitytweaks.gui.DurabilityConfigScreen;
+import com.betongoat.durabilitytweaks.gui.Screens;
+import com.betongoat.durabilitytweaks.render.LegMirror;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -105,6 +107,17 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             context.waitTicks(10);
             context.takeScreenshot("gallery_10_custom_colors");
             context.setScreen(() -> null);
+            DurabilityConfig.reset();
+
+            // Numbers on every piece: the armor models are rebuilt without the mirrored left leg
+            context.runOnClient(client -> {
+                DurabilityConfig.get().setNumberMode(NumberMode.ALL);
+                LegMirror.reloadIfNeeded(client);
+            });
+            context.waitTicks(5);
+            context.waitFor(client -> !Screens.overlayActive(client), 6000);
+            context.waitTicks(40);
+            context.takeScreenshot("gallery_11_all_numbers");
             DurabilityConfig.reset();
         }
     }

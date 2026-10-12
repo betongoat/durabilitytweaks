@@ -29,6 +29,8 @@ CAPTIONS = {
                             "Hotbar and armor HUD mods show the durability colour too"),
     "gallery_10_custom_colors": ("Your own colours",
                                  "Pick any colour for every durability level"),
+    "gallery_11_all_numbers": ("A number on every piece",
+                               "Optional numbers on the leggings and boots too"),
 }
 GLOW = [(31, 214, 42), (255, 210, 31), (224, 30, 30), (155, 43, 232), (46, 91, 255)]
 

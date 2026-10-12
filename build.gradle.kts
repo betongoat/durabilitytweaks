@@ -23,6 +23,9 @@ val clientMixins: List<String> = buildList {
     add("KeyMappingMixin")
     // Durability colour on armor icons (hotbar, armor HUD mods, optionally inventories)
     add("GuiItemMixin")
+    // Un-mirrored left armor leg while numbers are shown on leggings / boots
+    add("ArmorLegMirrorMixin")
+    add("ArmorStandLegMirrorMixin")
     if (mc >= "1.21.2") {
         add("EquipmentLayerRendererMixin")
         add("EntityRendererMixin")

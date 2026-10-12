@@ -16,10 +16,11 @@ Zrzuty ekranu z gry robione automatycznie przez CI (Minecraft 26.2, 1920×1080):
 | ![Sama liczba](docs/gallery/gallery_5_diamond_number_only.png) | ![Gracz](docs/gallery/gallery_6_player.png) |
 | ![Gracz z liczbami](docs/gallery/gallery_7_player_numbers.png) | ![Ustawienia](docs/gallery/gallery_8_settings.png) |
 | ![Ikony na HUD](docs/gallery/gallery_9_hud_icons.png) | ![Własne kolory](docs/gallery/gallery_10_custom_colors.png) |
+| ![Liczby na całym secie](docs/gallery/gallery_11_all_numbers.png) | |
 
 ## Wersje
 
-**Jeden plik `durabilitytweaks-1.2.0.jar` działa na wszystkich wersjach 1.21 – 26.3**
+**Jeden plik `durabilitytweaks-1.3.0.jar` działa na wszystkich wersjach 1.21 – 26.3**
 ([pobierz z Releases](https://github.com/betongoat/durabilitytweaks/releases/latest)). W środku są wersje
 dla poszczególnych grup wydań Minecrafta, a Fabric Loader sam ładuje tę pasującą do gry:
 
@@ -76,7 +77,8 @@ Po prawej podgląd na żywo zbroi netherytowej i diamentowej z suwakiem wytrzyma
   paleta (klasyczna, zielony → czerwony, dla daltonistów albo **własna** – przycisk ✎ otwiera edytor,
   w którym każdemu z 12 poziomów wytrzymałości ustawisz dowolny kolor suwakami RGB, kodem hex albo gotowym kolorem);
   grubość obramówki.
-- **Liczba** – gdzie: brak / hełm / napierśnik / oba; co pokazuje: punkty (domyślnie) albo procenty;
+- **Liczba** – na których częściach (każdą włączasz osobno kliknięciem): hełm, napierśnik, spodnie, buty
+  (domyślnie hełm i napierśnik); co pokazuje: punkty (domyślnie) albo procenty;
   rozmiar (mała / średnia / duża); kolor (auto, biały, kolor wytrzymałości, czarny, żółty);
   czy pokazywać na pełnej zbroi.
 - **Ikony** – kolorowe ikony zbroi: wyłączone / na HUD (pasek i mody z armor HUD, domyślnie) /
@@ -84,15 +86,13 @@ Po prawej podgląd na żywo zbroi netherytowej i diamentowej z suwakiem wytrzyma
 - **Ogólne** – włącz/wyłącz, które zbroje (wszystkie albo diament i netheryt), czyja zbroja
   (wszyscy / tylko moja / tylko inni), reset.
 
-Liczby są tylko na hełmie i napierśniku: obie nogi spodni i butów używają tego samego, lustrzanie odbitego
-fragmentu tekstury, więc liczba na jednej nodze zawsze byłaby odwrócona, a górę spodni zasłania napierśnik.
+Liczby na spodniach i butach są z przodu obu nóg. W Minecrafcie lewa noga zbroi pokazuje teksturę
+w lustrzanym odbiciu, więc gdy te liczby są włączone, mod buduje model zbroi z nieodbitą lewą nogą
+(dzięki temu liczba czyta się dobrze na obu nogach). Po ich włączeniu/wyłączeniu zasoby przeładowują się
+raz przy zamykaniu ustawień.
 
 **Armor HUD:** mod koloruje ikonę zbroi w miejscu, przez które Minecraft rysuje każdą ikonę przedmiotu,
 więc działa z modami pokazującymi zbroję na ekranie (armor HUD) bez dodatkowej konfiguracji.
-
-Klawisz **J** wypisuje na twoim czacie (tylko u ciebie) pozostałą wytrzymałość zbroi gracza lub moba pod
-celownikiem, np. `400/592`. Jeśli u innego gracza cała zbroja jest pełna, mimo że dostawał obrażenia, serwer ukrywa wytrzymałość zbroi innych
-graczy i żaden mod ani dura pack jej nie pokaże.
 
 Języki: angielski, polski, niemiecki, hiszpański, francuski, portugalski (BR), rosyjski, ukraiński,
 czeski, włoski, turecki, holenderski, chiński, japoński, koreański.
