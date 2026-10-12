@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "Rood: %s",
   "durabilitytweaks.editor.green": "Groen: %s",
   "durabilitytweaks.editor.blue": "Blauw: %s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "Ga een wereld in om de icoonvoorbeelden te zien."
 }

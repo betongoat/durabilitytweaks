@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "赤: %s",
   "durabilitytweaks.editor.green": "緑: %s",
   "durabilitytweaks.editor.blue": "青: %s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "アイコンのプレビューはワールドに入ると表示されます。"
 }

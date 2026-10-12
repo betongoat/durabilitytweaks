@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "红：%s",
   "durabilitytweaks.editor.green": "绿：%s",
   "durabilitytweaks.editor.blue": "蓝：%s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "进入世界后即可预览图标。"
 }

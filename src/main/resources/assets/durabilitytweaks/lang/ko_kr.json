@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "빨강: %s",
   "durabilitytweaks.editor.green": "초록: %s",
   "durabilitytweaks.editor.blue": "파랑: %s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "월드에 들어가면 아이콘 미리보기를 볼 수 있습니다."
 }

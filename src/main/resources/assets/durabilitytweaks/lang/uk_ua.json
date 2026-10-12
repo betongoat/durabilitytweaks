@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "Червоний: %s",
   "durabilitytweaks.editor.green": "Зелений: %s",
   "durabilitytweaks.editor.blue": "Синій: %s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "Зайдіть у світ, щоб побачити попередній перегляд іконок."
 }

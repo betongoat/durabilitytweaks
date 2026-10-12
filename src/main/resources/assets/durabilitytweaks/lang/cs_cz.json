@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "Červená: %s",
   "durabilitytweaks.editor.green": "Zelená: %s",
   "durabilitytweaks.editor.blue": "Modrá: %s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "Vstup do světa a uvidíš náhled ikon."
 }

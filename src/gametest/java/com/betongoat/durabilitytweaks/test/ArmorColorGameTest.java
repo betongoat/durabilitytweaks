@@ -36,7 +36,10 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             waitForWorld(context);
             // Full HD only after the world loaded: software rendering on CI is too slow to load a world at 1080p
             context.getInput().resizeWindow(1920, 1080);
-            context.runOnClient(client -> setHudHidden(client, true));
+            context.runOnClient(client -> {
+                setHudHidden(client, true);
+                SelfCheck.checkIcons();
+            });
 
             int y = context.computeOnClient(client -> (int) Math.floor(client.player.getY()));
             command(world, "time set noon");

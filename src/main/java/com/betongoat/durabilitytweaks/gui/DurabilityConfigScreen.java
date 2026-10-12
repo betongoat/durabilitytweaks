@@ -192,6 +192,11 @@ public class DurabilityConfigScreen extends Screen {
         int y = contentTop + 2;
         Button icons = row(y, "icons", cycleButton(() -> config.iconMode, v -> config.iconMode = v, "icons"));
         refreshers.add(() -> icons.active = config.style != ColorStyle.NONE);
+        if (this.minecraft.level == null) {
+            // Item stacks need a loaded world on 26.x; from the title screen the preview is skipped
+            labels.add(new Label(Component.translatable("durabilitytweaks.icons.preview.world"), leftX + 8, y + ROW + 6));
+            return;
+        }
         iconPreviewTop = y + ROW + 6;
         for (int i = 0; i < NETHERITE_SET.length; i++) {
             iconStacks[i] = new ItemStack(NETHERITE_SET[i]);

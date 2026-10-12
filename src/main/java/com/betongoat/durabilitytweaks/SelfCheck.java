@@ -22,12 +22,9 @@ public final class SelfCheck {
             ArmorTextureManager.vanillaTexture("netherite", ArmorLayout.Kind.OUTER), ArmorLayout.Kind.OUTER, info,
             ColorStyle.FULL, NumberMode.HELMET_AND_CHESTPLATE);
         check(texture != null && texture.id().getNamespace().equals(DurabilityTweaks.MOD_ID), "armor texture was not generated");
-
-        // Damaged armor gets a coloured icon on the HUD, full armor keeps the vanilla one
-        ItemStack chestplate = new ItemStack(Items.NETHERITE_CHESTPLATE);
-        check(ArmorTextureManager.icon(chestplate, true) == null, "full armor icon was recoloured");
-        chestplate.setDamageValue(chestplate.getMaxDamage() / 2);
-        check(ArmorTextureManager.icon(chestplate, true) != null, "armor icon was not generated");
+        //? if <26.1 {
+        /*checkIcons();
+        *///?}
 
         // Our translations work normally...
         check(!Component.translatable(KEY).getString().equals(KEY), "own translation missing");
@@ -41,6 +38,17 @@ public final class SelfCheck {
         }
         check(!Component.translatable(KEY).getString().equals(KEY), "translation not restored after guard");
         DurabilityTweaks.LOGGER.info("Self check passed");
+    }
+
+    /**
+     * Damaged armor gets a coloured icon on the HUD, full armor keeps the vanilla one.
+     * Since 26.1 item stacks only work once a world is loaded.
+     */
+    public static void checkIcons() {
+        ItemStack chestplate = new ItemStack(Items.NETHERITE_CHESTPLATE);
+        check(ArmorTextureManager.icon(chestplate, true) == null, "full armor icon was recoloured");
+        chestplate.setDamageValue(chestplate.getMaxDamage() / 2);
+        check(ArmorTextureManager.icon(chestplate, true) != null, "armor icon was not generated");
     }
 
     private static void check(boolean condition, String message) {

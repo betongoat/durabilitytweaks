@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "Красный: %s",
   "durabilitytweaks.editor.green": "Зелёный: %s",
   "durabilitytweaks.editor.blue": "Синий: %s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "Зайдите в мир, чтобы увидеть превью иконок."
 }

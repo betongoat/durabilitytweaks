@@ -103,5 +103,6 @@
   "durabilitytweaks.editor.red": "Kırmızı: %s",
   "durabilitytweaks.editor.green": "Yeşil: %s",
   "durabilitytweaks.editor.blue": "Mavi: %s",
-  "durabilitytweaks.editor.hex": "Hex"
+  "durabilitytweaks.editor.hex": "Hex",
+  "durabilitytweaks.icons.preview.world": "Simge önizlemesi için bir dünyaya gir."
 }
