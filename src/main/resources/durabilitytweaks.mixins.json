@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.betongoat.durabilitytweaks.mixin",
+  "compatibilityLevel": "${java}",
+  "client": [
+    ${client_mixins}
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

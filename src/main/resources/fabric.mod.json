@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "Dura pack as a mod: worn armor changes colour as it loses durability. Full recolour, coloured outline or a durability number on the helmet - pick your style in the settings screen.",
+  "authors": [
+    "betongoat"
+  ],
+  "contact": {
+    "sources": "https://github.com/betongoat/durabilitytweaks",
+    "issues": "https://github.com/betongoat/durabilitytweaks/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/durabilitytweaks/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.betongoat.durabilitytweaks.DurabilityTweaks"
+    ],
+    "modmenu": [
+      "com.betongoat.durabilitytweaks.compat.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "durabilitytweaks.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader}",
+    "minecraft": "${minecraft}",
+    "java": ">=${java}",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "durabilitytweaks.title": "Durability Tweaks",
+  "durabilitytweaks.subtitle": "Armor colour follows its durability · by betongoat",
+  "durabilitytweaks.section.settings": "Settings",
+  "durabilitytweaks.section.preview": "Preview",
+  "durabilitytweaks.disabled": "The mod is turned off",
+  "durabilitytweaks.reset": "Reset",
+  "durabilitytweaks.reset.tooltip": "Restore every setting to its default value.",
+
+  "durabilitytweaks.option.enabled": "Mod",
+  "durabilitytweaks.option.enabled.tooltip": "Turns all armor colouring on or off.",
+
+  "durabilitytweaks.option.style": "Style",
+  "durabilitytweaks.option.style.tooltip": "Full colour: the whole armor takes the durability colour (classic dura pack).\nOutline: the armor keeps its look, only its edges are coloured.\nNo colour: armor stays vanilla - combine it with the number.",
+  "durabilitytweaks.option.style.full": "Full colour",
+  "durabilitytweaks.option.style.outline": "Outline",
+  "durabilitytweaks.option.style.none": "No colour",
+
+  "durabilitytweaks.option.palette": "Colours",
+  "durabilitytweaks.option.palette.tooltip": "Colour scale used for the durability bands.",
+  "durabilitytweaks.option.palette.classic": "Classic",
+  "durabilitytweaks.option.palette.gradient": "Green → red",
+  "durabilitytweaks.option.palette.colorblind": "Colour blind",
+
+  "durabilitytweaks.option.outline": "Outline width",
+  "durabilitytweaks.option.outline.tooltip": "Width of the coloured border in the Outline style.",
+  "durabilitytweaks.option.outline.thin": "Thin",
+  "durabilitytweaks.option.outline.thick": "Thick",
+
+  "durabilitytweaks.option.number": "Number",
+  "durabilitytweaks.option.number.tooltip": "Paints the remaining durability onto the armor, like the number packs.",
+  "durabilitytweaks.option.number.off": "Off",
+  "durabilitytweaks.option.number.helmet": "Helmet",
+  "durabilitytweaks.option.number.helmet_and_chestplate": "Helmet + chest",
+
+  "durabilitytweaks.option.format": "Number shows",
+  "durabilitytweaks.option.format.tooltip": "Percent of durability left, or the exact durability points left.",
+  "durabilitytweaks.option.format.percent": "Percent",
+  "durabilitytweaks.option.format.points": "Points",
+
+  "durabilitytweaks.option.show_at_full": "Number at 100%",
+  "durabilitytweaks.option.show_at_full.tooltip": "Also show the number on undamaged armor. Without it, full armor looks completely vanilla.",
+
+  "durabilitytweaks.option.filter": "Armor",
+  "durabilitytweaks.option.filter.tooltip": "Which armor gets coloured. Netherite changes colour every 10% down to 20%, then every 5%. Everything else changes every 10% down to 10%, plus two extra colours for intense PvP (10-5% and 5-0%).",
+  "durabilitytweaks.option.filter.all": "All armor",
+  "durabilitytweaks.option.filter.diamond_netherite": "Diamond & netherite",
+
+  "durabilitytweaks.material.netherite": "Netherite",
+  "durabilitytweaks.material.diamond": "Diamond",
+  "durabilitytweaks.preview.durability": "Preview durability: %s%%",
+  "durabilitytweaks.preview.tooltip": "Only changes the preview, not your settings.",
+  "durabilitytweaks.legend.range": "%s: %s-%s%% durability",
+
+  "key.durabilitytweaks.open_settings": "Open settings",
+  "key.categories.durabilitytweaks": "Durability Tweaks",
+  "key.category.durabilitytweaks.main": "Durability Tweaks"
+}
