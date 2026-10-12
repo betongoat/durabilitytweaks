@@ -94,6 +94,9 @@ public class DurabilityConfigScreen extends Screen {
     /** Top of the description box, or -1 when the screen is too small for it (tooltips are used instead). */
     private int descriptionTop;
     private int contentBottom;
+    /** Where the current tab's settings end; the description box may grow up to here. */
+    private int contentEnd;
+    private int iconScale = 1;
     private int iconPreviewTop = -1;
 
     public DurabilityConfigScreen(Screen parent) {
@@ -165,6 +168,7 @@ public class DurabilityConfigScreen extends Screen {
         rows.add(new Row(y, "edit_colors", leftX + panelWidth - 28, leftX + panelWidth - 8));
         y += ROW;
         Button outline = row(y, "outline", cycleButton(() -> config.outlineWidth, v -> config.outlineWidth = v, "outline"));
+        contentEnd = y + BUTTON_HEIGHT;
         refreshers.add(() -> {
             palette.active = config.style != ColorStyle.NONE;
             edit.active = config.style != ColorStyle.NONE;
@@ -187,6 +191,7 @@ public class DurabilityConfigScreen extends Screen {
         numberButtons.add(row(y, "color", cycleButton(() -> config.numberColor, v -> config.numberColor = v, "color")));
         y += ROW;
         numberButtons.add(row(y, "show_at_full", toggleButton(() -> config.showAtFull, v -> config.showAtFull = v)));
+        contentEnd = y + BUTTON_HEIGHT;
         refreshers.add(() -> numberButtons.forEach(button -> button.active = config.numberMode().any()));
     }
 
@@ -198,9 +203,13 @@ public class DurabilityConfigScreen extends Screen {
         if (this.minecraft.level == null) {
             // Item stacks need a loaded world on 26.x; from the title screen the preview is skipped
             labels.add(new Label(Component.translatable("durabilitytweaks.icons.preview.world"), leftX + 8, y + ROW + 6));
+            contentEnd = y + ROW + 16;
             return;
         }
         iconPreviewTop = y + ROW + 6;
+        // Two strips (label, slot row, gap) at double size when there is room
+        iconScale = contentBottom - iconPreviewTop >= 2 * (11 + 36 + 8) ? 2 : 1;
+        contentEnd = iconPreviewTop + 2 * (11 + 16 * iconScale + 4 + 8) - 8;
         for (int i = 0; i < NETHERITE_SET.length; i++) {
             iconStacks[i] = new ItemStack(NETHERITE_SET[i]);
         }
@@ -225,6 +234,7 @@ public class DurabilityConfigScreen extends Screen {
         labels.add(new Label(Component.translatable("durabilitytweaks.inspect_hint",
             DurabilityTweaks.inspectArmorKey().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.YELLOW)), leftX + 8, y + 11));
         labels.add(new Label(Component.translatable("durabilitytweaks.client_only"), leftX + 8, y + 22));
+        contentEnd = y + 32;
     }
 
     /** A row of picture tiles for an option with few values; returns the y below it. */
@@ -401,10 +411,6 @@ public class DurabilityConfigScreen extends Screen {
             }
         }
         gfx.fill(leftX, top + TAB_HEIGHT, leftX + panelWidth, top + TAB_HEIGHT + 1, PANEL_BORDER);
-        if (descriptionTop >= 0) {
-            gfx.fill(leftX + 6, descriptionTop, leftX + panelWidth - 6, panelBottom - 6, TILE);
-            gfx.fill(leftX + 6, descriptionTop, leftX + 8, panelBottom - 6, ACCENT);
-        }
 
         // Preview panel with a sky coloured stage for the armor
         gfx.fill(rightX, top, rightX + panelWidth, panelBottom, PANEL);
@@ -473,9 +479,14 @@ public class DurabilityConfigScreen extends Screen {
     private boolean drawDescription(Gfx gfx, Component text) {
         int x = leftX + 14;
         int width = panelWidth - 26;
-        int y = descriptionTop + 4;
-        int maxLines = Math.max(1, (panelBottom - 6 - y) / 10);
+        int bottom = panelBottom - 6;
         List<FormattedCharSequence> lines = this.font.split(text, width);
+        // The box grows upwards into free space for long texts, but never over the settings
+        int boxTop = Math.max(Math.min(descriptionTop, bottom - lines.size() * 10 - 6), Math.min(descriptionTop, contentEnd + 6));
+        gfx.fill(leftX + 6, boxTop, leftX + panelWidth - 6, bottom, TILE);
+        gfx.fill(leftX + 6, boxTop, leftX + 8, bottom, ACCENT);
+        int y = boxTop + 4;
+        int maxLines = Math.max(1, (bottom - y) / 10);
         for (int i = 0; i < Math.min(lines.size(), maxLines); i++) {
             gfx.text(this.font, lines.get(i), x, y + i * 10, 0xFFD8DCE4, false);
         }
@@ -488,7 +499,7 @@ public class DurabilityConfigScreen extends Screen {
             ItemStack stack = iconStacks[i];
             stack.setDamageValue((int) Math.round(stack.getMaxDamage() * (100 - previewPercent) / 100.0));
         }
-        int scale = contentBottom - iconPreviewTop >= 2 * (36 + 16) ? 2 : 1;
+        int scale = iconScale;
         int slot = 16 * scale + 4;
         int y = iconPreviewTop;
         String[] places = {"hud", "inventory"};
