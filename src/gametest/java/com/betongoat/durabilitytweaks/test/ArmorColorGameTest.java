@@ -42,6 +42,7 @@ public class ArmorColorGameTest implements FabricClientGameTest {
                 setHudHidden(client, true);
                 SelfCheck.checkIcons();
             });
+            clickSettings(context);
 
             int y = context.computeOnClient(client -> (int) Math.floor(client.player.getY()));
             // The armor given later would pop up an advancement toast and chat message in the HUD shot
@@ -119,6 +120,37 @@ public class ArmorColorGameTest implements FabricClientGameTest {
             context.waitTicks(40);
             context.takeScreenshot("gallery_11_all_numbers");
             DurabilityConfig.reset();
+        }
+    }
+
+    /** Clicks through the settings screen like a player would: a tab, a tile and the Done button. */
+    private static void clickSettings(ClientGameTestContext context) {
+        context.setScreen(() -> new DurabilityConfigScreen(null, 0));
+        context.waitTicks(5);
+        click(context, screen -> screen.tabCenter(1));
+        expect(context, client -> DurabilityConfigScreen.currentTab() == 1, "clicking the Number tab did nothing");
+        click(context, screen -> screen.tileCenter(0));
+        expect(context, client -> !DurabilityConfig.get().numberOnHelmet, "clicking the Helmet tile did nothing");
+        click(context, screen -> new int[] {screen.width / 2, screen.height - 16});
+        expect(context, client -> Screens.current(client) == null, "clicking Done did nothing");
+        context.runOnClient(client -> DurabilityConfig.reset());
+    }
+
+    private static void click(ClientGameTestContext context, java.util.function.Function<DurabilityConfigScreen, int[]> target) {
+        double[] pos = context.computeOnClient(client -> {
+            int[] gui = target.apply((DurabilityConfigScreen) Screens.current(client));
+            double scale = client.getWindow().getScreenWidth() / (double) client.getWindow().getGuiScaledWidth();
+            return new double[] {(gui[0] + 0.5) * scale, (gui[1] + 0.5) * scale};
+        });
+        context.getInput().setCursorPos(pos[0], pos[1]);
+        context.waitTicks(1);
+        context.getInput().pressMouse(0);
+        context.waitTicks(3);
+    }
+
+    private static void expect(ClientGameTestContext context, java.util.function.Predicate<Minecraft> condition, String message) {
+        if (!context.computeOnClient(condition::test)) {
+            throw new AssertionError("Settings screen: " + message);
         }
     }
 

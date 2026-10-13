@@ -698,6 +698,22 @@ public class DurabilityConfigScreen extends Screen {
         return mouseX >= r[0] && mouseX < r[0] + r[2] && mouseY >= r[1] && mouseY < r[1] + r[3];
     }
 
+    // ------------------------------------------------------------------ positions for the in-game click test
+
+    public static int currentTab() {
+        return tab;
+    }
+
+    public int[] tabCenter(int index) {
+        int[] r = tabRect(index);
+        return new int[] {r[0] + r[2] / 2, r[1] + r[3] / 2};
+    }
+
+    public int[] tileCenter(int index) {
+        Tile tile = tiles.get(index);
+        return new int[] {tile.x + tile.width / 2, tile.y + tile.height / 2};
+    }
+
     // ------------------------------------------------------------------ helpers
 
     private record Label(Component text, int x, int y) {

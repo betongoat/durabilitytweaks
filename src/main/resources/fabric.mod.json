@@ -3,7 +3,7 @@
   "id": "${id}",
   "version": "${version}",
   "name": "${name}",
-  "description": "Dura pack as a mod: worn armor changes colour as it loses durability. Full recolour, coloured outline or a durability number on the helmet - pick your style in the settings screen.",
+  "description": "Dura pack as a mod: worn armor changes colour as it loses durability, with optional durability numbers on the armor and coloured armor HUD icons.",
   "authors": [
     "betongoat"
   ],
@@ -33,5 +33,10 @@
   },
   "suggests": {
     "modmenu": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "parent": "durabilitytweaks-universal"
+    }
   }
 }
