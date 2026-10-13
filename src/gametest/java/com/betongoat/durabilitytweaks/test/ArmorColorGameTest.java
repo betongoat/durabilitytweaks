@@ -1,6 +1,7 @@
 package com.betongoat.durabilitytweaks.test;
 
 import com.betongoat.durabilitytweaks.SelfCheck;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.betongoat.durabilitytweaks.config.ColorStyle;
 import com.betongoat.durabilitytweaks.config.DurabilityConfig;
 import com.betongoat.durabilitytweaks.config.NumberMode;
@@ -144,7 +145,7 @@ public class ArmorColorGameTest implements FabricClientGameTest {
         });
         context.getInput().setCursorPos(pos[0], pos[1]);
         context.waitTicks(1);
-        context.getInput().pressMouse(0);
+        context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
         context.waitTicks(3);
     }
 

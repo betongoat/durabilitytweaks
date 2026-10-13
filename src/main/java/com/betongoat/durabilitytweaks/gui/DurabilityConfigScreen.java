@@ -13,6 +13,7 @@ import com.betongoat.durabilitytweaks.core.DurabilityTier;
 import com.betongoat.durabilitytweaks.core.Palette;
 import com.betongoat.durabilitytweaks.render.ArmorTextureManager;
 import com.betongoat.durabilitytweaks.render.LegMirror;
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -331,7 +332,7 @@ public class DurabilityConfigScreen extends Screen {
     //? if >=1.21.9 {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0 && clickCustom(event.x(), event.y())) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && clickCustom(event.x(), event.y())) {
             return true;
         }
         return super.mouseClicked(event, doubleClick);
@@ -339,14 +340,14 @@ public class DurabilityConfigScreen extends Screen {
     //?} else {
     /*@Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && clickCustom(mouseX, mouseY)) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && clickCustom(mouseX, mouseY)) {
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
     *///?}
 
-    /** Tabs and picture tiles are drawn by the screen itself, so it also handles their clicks. */
+    /** Tabs and picture tiles are drawn by the screen itself, so it also handles their clicks (left button: 0 before 26.3, 1 since). */
     private boolean clickCustom(double mouseX, double mouseY) {
         for (int i = 0; i < TABS.length; i++) {
             if (tabHit(i, mouseX, mouseY)) {
